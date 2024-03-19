@@ -5,16 +5,31 @@
   Original code MIT License + 3-clause BSD http://robertpenner.com/easing_terms_of_use.html
 */
 
-export const backIn = (time: number, overshoot = 1.70158) => {
+/**
+ * @param {number} time
+ * @param {number} [overshoot=1.70158] 
+ * @returns {number}
+ */
+export const backIn = (time, overshoot = 1.70158) => {
   return time * time * ((overshoot + 1) * time - overshoot);
 };
 
-export const backOut = (time: number, overshoot = 1.70158) => {
+/**
+ * @param {number} time
+ * @param {number} [overshoot=1.70158] 
+ * @returns {number}
+ */
+export const backOut = (time, overshoot = 1.70158) => {
   time = time - 1;
   return time * time * ((overshoot + 1) * time + overshoot) + 1;
 };
 
-export const backInOut = (time: number, overshoot = 1.70158) => {
+/**
+ * @param {number} time
+ * @param {number} [overshoot=1.70158] 
+ * @returns {number}
+ */
+export const backInOut = (time, overshoot = 1.70158) => {
   time = time * 2;
   overshoot = overshoot * 1.525;
   if (time < 1) {
@@ -24,7 +39,11 @@ export const backInOut = (time: number, overshoot = 1.70158) => {
   }
 };
 
-export const bounceOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const bounceOut = (time) => {
   if (time < 1 / 2.75) {
     return 7.5625 * time * time;
   } else if (time < 2 / 2.75) {
@@ -36,11 +55,19 @@ export const bounceOut = (time: number) => {
   }
 };
 
-export const bounceIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const bounceIn = (time) => {
   return 1 - bounceOut(1 - time);
 };
 
-export const bounceInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const bounceInOut = (time) => {
   if (time < 0.5) {
     return bounceIn(time * 2) * 0.5;
   } else {
@@ -48,16 +75,28 @@ export const bounceInOut = (time: number) => {
   }
 };
 
-export const circIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const circIn = (time) => {
   return -(Math.sqrt(1 - time * time) - 1);
 };
 
-export const circOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const circOut = (time) => {
   time = time - 1;
   return Math.sqrt(1 - time * time);
 };
 
-export const circInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const circInOut = (time) => {
   time = time * 2;
   if (time < 1) {
     return -0.5 * (Math.sqrt(1 - time * time) - 1);
@@ -67,16 +106,28 @@ export const circInOut = (time: number) => {
   }
 };
 
-export const cubicIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const cubicIn = (time) => {
   return time * time * time;
 };
 
-export const cubicOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const cubicOut = (time) => {
   time = time - 1;
   return time * time * time + 1;
 };
 
-export const cubicInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const cubicInOut = (time) => {
   time = time * 2;
   if (time < 1) {
     return 0.5 * time * time * time;
@@ -86,7 +137,13 @@ export const cubicInOut = (time: number) => {
   }
 };
 
-export const elasticOut = (time: number, amplitude = 1, period = 0.3) => {
+/**
+ * @param {number} time 
+ * @param {number} [amplitude=1]
+ * @param {number} [period=0.3]
+ * @returns {number}
+ */
+export const elasticOut = (time, amplitude = 1, period = 0.3) => {
   if (time === 0) {
     return 0;
   } else if (time === 1) {
@@ -102,7 +159,13 @@ export const elasticOut = (time: number, amplitude = 1, period = 0.3) => {
   }
 };
 
-export const elasticIn = (time: number, amplitude = 1, period = 0.3) => {
+/**
+ * @param {number} time 
+ * @param {number} [amplitude=1]
+ * @param {number} [period=0.3]
+ * @returns {number}
+ */
+export const elasticIn = (time, amplitude = 1, period = 0.3) => {
   if (time === 0) {
     return 0;
   } else if (time === 1) {
@@ -117,7 +180,13 @@ export const elasticIn = (time: number, amplitude = 1, period = 0.3) => {
   }
 };
 
-export const elasticInOut = (time: number, amplitude = 1, period = 0.45) => {
+/**
+ * @param {number} time 
+ * @param {number} [amplitude=1]
+ * @param {number} [period=0.45]
+ * @returns {number}
+ */
+export const elasticInOut = (time, amplitude = 1, period = 0.45) => {
   time = time * 2;
   if (time === 0) {
     return 0;
@@ -143,20 +212,33 @@ export const elasticInOut = (time: number, amplitude = 1, period = 0.45) => {
   }
 };
 
-export const expoIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const expoIn = (time) => {
   if (time === 0) {
     return 0;
   }
   return 2 ** (10 * (time - 1));
 };
-export const expoOut = (time: number) => {
+
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const expoOut = (time) => {
   if (time === 1) {
     return 1;
   }
   return -(2 ** (-10 * time)) + 1;
 };
 
-export const expoInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const expoInOut = (time) => {
   time = time * 2;
   if (time === 0) {
     return 0;
@@ -169,19 +251,35 @@ export const expoInOut = (time: number) => {
   }
 };
 
-export const linear = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const linear = (time) => {
   return time;
 };
 
-export const quadIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quadIn = (time) => {
   return time * time;
 };
 
-export const quadOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quadOut = (time) => {
   return -time * (time - 2);
 };
 
-export const quadInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quadInOut = (time) => {
   time = time * 2;
   if (time < 1) {
     return 0.5 * time * time;
@@ -191,16 +289,28 @@ export const quadInOut = (time: number) => {
   }
 };
 
-export const quartIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quartIn = (time) => {
   return time * time * time * time;
 };
 
-export const quartOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quartOut = (time) => {
   time = time - 1;
   return -(time * time * time * time - 1);
 };
 
-export const quartInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quartInOut = (time) => {
   time = time * 2;
   if (time < 1) {
     return 0.5 * time * time * time * time;
@@ -210,16 +320,28 @@ export const quartInOut = (time: number) => {
   }
 };
 
-export const quintIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quintIn = (time) => {
   return time * time * time * time * time;
 };
 
-export const quintOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quintOut = (time) => {
   time = time - 1;
   return time * time * time * time * time + 1;
 };
 
-export const quintInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const quintInOut = (time) => {
   time = time * 2;
   if (time < 1) {
     return 0.5 * time * time * time * time * time;
@@ -229,22 +351,47 @@ export const quintInOut = (time: number) => {
   }
 };
 
-export const sineIn = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const sineIn = (time) => {
   return -Math.cos(time * (Math.PI / 2)) + 1;
 };
 
-export const sineOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const sineOut = (time) => {
   return Math.sin(time * (Math.PI / 2));
 };
 
-export const sineInOut = (time: number) => {
+/**
+ * @param {number} time 
+ * @returns {number}
+ */
+export const sineInOut = (time) => {
   return -0.5 * (Math.cos(Math.PI * time) - 1);
 };
 
+/**
+ * @callback EasingFunction
+ * @param {number} time
+ * @returns {number}
+ */
+
+/**
+ * Convenience function to use different easing functions above and below 0.5
+ * @param {number} time 
+ * @param {EasingFunction} start 
+ * @param {EasingFunction} end 
+ * @returns {number}
+ */
 export const inOut = (
-  time: number,
-  start: (t: number) => number,
-  end: (t: number) => number
+  time,
+  start,
+  end
 ) => {
   if (time <= 0.5) {
     return start(time * 2) * 0.5;

@@ -1,5 +1,5 @@
 {
-  "name": "easing",
+  "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
   "version": "0.2.0",
   "license": "MIT",
@@ -8,9 +8,12 @@
   "types": "dist/main.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bluehexagons/easing.git"
+    "url": "git+https://github.com/bluehexagons/easing.git"
   },
-  "keywords": ["easing", "interpolation"],
+  "keywords": [
+    "easing",
+    "interpolation"
+  ],
   "bugs": {
     "url": "https://github.com/bluehexagons/easing/issues"
   },

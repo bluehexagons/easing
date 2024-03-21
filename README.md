@@ -11,7 +11,7 @@ MIT license.
 
 ## Usage
 ```js
-import { lerp, ease, quadIn, linear } from '@bluehexagons/easing';
+import { lerp, ease, quadIn, linear, elasticInOut } from '@bluehexagons/easing';
 
 const time = 0.5;
 const start = 0;

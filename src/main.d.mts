@@ -30,4 +30,6 @@ export function sineIn(time: number): number;
 export function sineOut(time: number): number;
 export function sineInOut(time: number): number;
 export function inOut(time: number, start: EasingFunction, end: EasingFunction): number;
+export function ease(fn: EasingFunction, time: number, from: number, to: number): number;
+export function lerp(time: number, from: number, to: number): number;
 export type EasingFunction = (time: number) => number;

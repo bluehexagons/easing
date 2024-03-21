@@ -40,7 +40,7 @@ export const backInOut = (time, overshoot = 1.70158) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const bounceOut = (time) => {
@@ -56,7 +56,7 @@ export const bounceOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const bounceIn = (time) => {
@@ -64,7 +64,7 @@ export const bounceIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const bounceInOut = (time) => {
@@ -76,7 +76,7 @@ export const bounceInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const circIn = (time) => {
@@ -84,7 +84,7 @@ export const circIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const circOut = (time) => {
@@ -93,7 +93,7 @@ export const circOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const circInOut = (time) => {
@@ -107,7 +107,7 @@ export const circInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const cubicIn = (time) => {
@@ -115,7 +115,7 @@ export const cubicIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const cubicOut = (time) => {
@@ -124,7 +124,7 @@ export const cubicOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const cubicInOut = (time) => {
@@ -138,7 +138,7 @@ export const cubicInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @param {number} [amplitude=1]
  * @param {number} [period=0.3]
  * @returns {number}
@@ -160,7 +160,7 @@ export const elasticOut = (time, amplitude = 1, period = 0.3) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @param {number} [amplitude=1]
  * @param {number} [period=0.3]
  * @returns {number}
@@ -181,7 +181,7 @@ export const elasticIn = (time, amplitude = 1, period = 0.3) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @param {number} [amplitude=1]
  * @param {number} [period=0.45]
  * @returns {number}
@@ -213,7 +213,7 @@ export const elasticInOut = (time, amplitude = 1, period = 0.45) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const expoIn = (time) => {
@@ -224,7 +224,7 @@ export const expoIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const expoOut = (time) => {
@@ -235,7 +235,7 @@ export const expoOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const expoInOut = (time) => {
@@ -252,16 +252,15 @@ export const expoInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const linear = (time) => {
   return time;
 };
-export const lerp = linear;
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quadIn = (time) => {
@@ -269,7 +268,7 @@ export const quadIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quadOut = (time) => {
@@ -277,7 +276,7 @@ export const quadOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quadInOut = (time) => {
@@ -291,7 +290,7 @@ export const quadInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quartIn = (time) => {
@@ -299,7 +298,7 @@ export const quartIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quartOut = (time) => {
@@ -308,7 +307,7 @@ export const quartOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quartInOut = (time) => {
@@ -322,7 +321,7 @@ export const quartInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quintIn = (time) => {
@@ -330,7 +329,7 @@ export const quintIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quintOut = (time) => {
@@ -339,7 +338,7 @@ export const quintOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const quintInOut = (time) => {
@@ -353,7 +352,7 @@ export const quintInOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const sineIn = (time) => {
@@ -361,7 +360,7 @@ export const sineIn = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const sineOut = (time) => {
@@ -369,7 +368,7 @@ export const sineOut = (time) => {
 };
 
 /**
- * @param {number} time 
+ * @param {number} time
  * @returns {number}
  */
 export const sineInOut = (time) => {
@@ -383,8 +382,8 @@ export const sineInOut = (time) => {
  */
 
 /**
- * Convenience function to use different easing functions above and below 0.5
- * @param {number} time 
+ * Helper function to use different easing functions above and below 0.5
+ * @param {number} time
  * @param {EasingFunction} start 
  * @param {EasingFunction} end 
  * @returns {number}
@@ -401,3 +400,23 @@ export const inOut = (
     return 0.5 + end(time - 1.0);
   }
 };
+
+/**
+ * Helper function to ease with a function between two values.
+ *
+ * @param {EasingFunction} fn Easing function taking only time as a parameter
+ * @param {number} time
+ * @param {number} from Starting value at 0 time
+ * @param {number} to Ending value at 1 time
+ * @returns {number}
+ */
+export const ease = (fn, time, from, to) => from + linear(time) * (to - from);
+
+/**
+ * Convenience function to linearly interpolate between two values at a given time.
+ *
+ * @param {number} time
+ * @param {number} from Starting value at 0 time
+ * @param {number} to Ending value at 1 time
+ */
+export const lerp = (time, from, to) => from + linear(time) * (to - from);

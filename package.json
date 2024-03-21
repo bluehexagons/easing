@@ -13,17 +13,27 @@
   "bugs": {
     "url": "https://github.com/bluehexagons/easing/issues"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/bluehexagons"
+  },
 
   "type": "module",
   "sideEffects": false,
   "engines": {
     "node": ">=15.0.0"
   },
-  "main": "./src/main.mjs",
+  "module": "./src/main.mjs",
   "types": "./src/main.d.mts",
   "exports": {
-    "import": "./src/main.mjs",
-    "require": "./src/main.mjs"
+    ".": {
+      "types": "./src/main.d.mts",
+      "import": "./src/main.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
   },
 
   "scripts": {

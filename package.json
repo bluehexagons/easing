@@ -1,7 +1,7 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "author": "bluehexagons <this@bluehexagons.com>",
   "main": "src/main.mjs",

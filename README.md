@@ -1,4 +1,4 @@
-=== @bluehexagons/easing ===
+# @bluehexagons/easing
 
 A simple easing library.
 
@@ -9,8 +9,22 @@ which is itself adapted from http://robertpenner.com/easing
 
 MIT license.
 
+## Usage
+```js
+import { lerp } from "@bluehexagons/easing";
 
-== TypeScript ==
+const time = 0.5;
+const start = 0;
+const end = 100;
+
+console.log(lerp(time, start, end));
+```
+
+## Contributing
+
+Pull requests are welcome.
+
+## TypeScript
 
 `src/main.d.ts` contains typings.
 

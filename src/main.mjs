@@ -258,6 +258,7 @@ export const expoInOut = (time) => {
 export const linear = (time) => {
   return time;
 };
+export const lerp = linear;
 
 /**
  * @param {number} time 
@@ -393,9 +394,10 @@ export const inOut = (
   start,
   end
 ) => {
-  if (time <= 0.5) {
-    return start(time * 2) * 0.5;
+  time = time * 2;
+  if (time <= 1) {
+    return start(time) * 0.5;
   } else {
-    return 0.5 + end((time - 0.5) * 2);
+    return 0.5 + end(time - 1.0);
   }
 };

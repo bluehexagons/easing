@@ -1,25 +1,25 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "license": "MIT",
   "author": "bluehexagons <this@bluehexagons.com>",
-  "main": "dist/main.mjs",
-  "types": "dist/main.d.mts",
+  "main": "src/main.mjs",
+  "types": "src/main.d.mts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bluehexagons/easing.git"
   },
   "keywords": [
     "easing",
-    "interpolation"
+    "interpolation",
+    "lerp"
   ],
   "bugs": {
     "url": "https://github.com/bluehexagons/easing/issues"
   },
   "homepage": "https://github.com/bluehexagons/easing",
   "files": [
-    "dist",
     "src"
   ],
   "scripts": {

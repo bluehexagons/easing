@@ -1,11 +1,12 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "license": "MIT",
   "author": "bluehexagons <this@bluehexagons.com>",
   "main": "src/main.mjs",
   "types": "src/main.d.mts",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bluehexagons/easing.git"

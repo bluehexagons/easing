@@ -1,7 +1,7 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "MIT",
   "author": "bluehexagons <this@bluehexagons.com>",
   "homepage": "https://github.com/bluehexagons/easing",
@@ -16,8 +16,15 @@
 
   "type": "module",
   "sideEffects": false,
-  "main": "src/main.mjs",
-  "types": "src/main.d.mts",
+  "engines": {
+    "node": ">=15.0.0"
+  },
+  "main": "./src/main.mjs",
+  "types": "./src/main.d.mts",
+  "exports": {
+    "import": "./src/main.mjs",
+    "require": "./src/main.mjs"
+  },
 
   "scripts": {
     "test": "echo \"no tests defined\" && exit 1",

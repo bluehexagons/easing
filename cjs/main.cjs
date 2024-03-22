@@ -429,7 +429,7 @@ exports.inOut = inOut;
  * @param {number} to Ending value at 1 time
  * @returns {number}
  */
-var ease = function (fn, time, from, to) { return from + (0, exports.linear)(time) * (to - from); };
+var ease = function (fn, time, from, to) { return from + fn(time) * (to - from); };
 exports.ease = ease;
 /**
  * Convenience function to linearly interpolate between two values at a given time.

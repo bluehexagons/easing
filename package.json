@@ -1,7 +1,7 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "license": "MIT",
   "author": "bluehexagons <this@bluehexagons.com>",
   "homepage": "https://github.com/bluehexagons/easing",
@@ -23,13 +23,15 @@
   "engines": {
     "node": ">=15.0.0"
   },
+  "types": "./src/main.d.mts",
   "main": "./src/main.mjs",
   "module": "./src/main.mjs",
-  "types": "./src/main.d.mts",
   "exports": {
     ".": {
       "types": "./src/main.d.mts",
-      "import": "./src/main.mjs"
+      "import": "./src/main.mjs",
+      "require": "./src/main.cjs",
+      "default": "./src/main.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -38,8 +40,10 @@
   },
 
   "scripts": {
+    "cjs": "tsc src/main.mjs --allowJs true --module commonjs --outDir cjs --emitDeclarationOnly false --declaration false && node ./build.js",
     "test": "echo \"no tests defined\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "postbuild": "npm run cjs"
   },
 
   "keywords": [

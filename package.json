@@ -41,7 +41,7 @@
 
   "scripts": {
     "cjs": "tsc src/main.mjs --allowJs true --module commonjs --outDir cjs --emitDeclarationOnly false --declaration false && node ./build.js",
-    "test": "echo \"no tests defined\" && exit 1",
+    "test": "node test.mjs",
     "build": "tsc",
     "postbuild": "npm run cjs"
   },

@@ -410,7 +410,7 @@ export const inOut = (
  * @param {number} to Ending value at 1 time
  * @returns {number}
  */
-export const ease = (fn, time, from, to) => from + linear(time) * (to - from);
+export const ease = (fn, time, from, to) => from + fn(time) * (to - from);
 
 /**
  * Convenience function to linearly interpolate between two values at a given time.

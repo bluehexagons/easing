@@ -9,9 +9,15 @@ which is itself adapted from http://robertpenner.com/easing
 
 MIT license.
 
+## Installation
+
+`npm install @bluehexagons/easing`
+
 ## Usage
+
 ```js
 import { lerp, ease, quadIn, linear, elasticInOut } from '@bluehexagons/easing';
+// commonjs: const { lerp, ease, quadIn, linear, elasticInOut } = require('@bluehexagons/easing');
 
 const time = 0.5;
 const start = 0;
@@ -49,6 +55,12 @@ console.log(
   ease(t => t ** 2, time, start, end)
 );
 ```
+
+### CommonJS
+
+TypeScript is used to compile a commonjs version of this module.
+
+Import with, e.g., `const Easing = require('@bluehexagons/easing)`.
 
 ## Contributing
 

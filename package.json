@@ -30,7 +30,7 @@
     ".": {
       "types": "./src/main.d.mts",
       "import": "./src/main.mjs",
-      "require": "./src/main.cjs",
+      "require": "./cjs/main.cjs",
       "default": "./src/main.mjs"
     },
     "./package.json": "./package.json"
@@ -52,7 +52,8 @@
     "lerp"
   ],
   "files": [
-    "src"
+    "src",
+    "cjs"
   ],
   "devDependencies": {
     "typescript": "^5.4.2"

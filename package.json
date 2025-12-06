@@ -23,15 +23,15 @@
   "engines": {
     "node": ">=15.0.0"
   },
-  "types": "./src/main.d.mts",
-  "main": "./src/main.mjs",
-  "module": "./src/main.mjs",
+  "types": "./dist/main.d.ts",
+  "main": "./dist/main.js",
+  "module": "./dist/main.js",
   "exports": {
     ".": {
-      "types": "./src/main.d.mts",
-      "import": "./src/main.mjs",
+      "types": "./dist/main.d.ts",
+      "import": "./dist/main.js",
       "require": "./cjs/main.cjs",
-      "default": "./src/main.mjs"
+      "default": "./dist/main.js"
     },
     "./package.json": "./package.json"
   },
@@ -40,7 +40,7 @@
   },
 
   "scripts": {
-    "cjs": "tsc src/main.mjs --allowJs true --module commonjs --outDir cjs --emitDeclarationOnly false --declaration false && node ./build.js",
+    "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
     "test": "node test.mjs",
     "build": "tsc",
     "postbuild": "npm run cjs"
@@ -52,7 +52,7 @@
     "lerp"
   ],
   "files": [
-    "src",
+    "dist",
     "cjs"
   ],
   "devDependencies": {

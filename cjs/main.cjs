@@ -1,35 +1,22 @@
+"use strict";
 /*
   Code heavily-adapted from https://github.com/jimjeffers/Easie
   which is itself adapted from http://robertpenner.com/easing
 
   Original code MIT License + 3-clause BSD http://robertpenner.com/easing_terms_of_use.html
 */
-/**
- * @param {number} time
- * @param {number} [overshoot=1.70158]
- * @returns {number}
- */
-export var backIn = function (time, overshoot) {
-    if (overshoot === void 0) { overshoot = 1.70158; }
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.lerp = exports.ease = exports.inOut = exports.sineInOut = exports.sineOut = exports.sineIn = exports.quintInOut = exports.quintOut = exports.quintIn = exports.quartInOut = exports.quartOut = exports.quartIn = exports.quadInOut = exports.quadOut = exports.quadIn = exports.linear = exports.expoInOut = exports.expoOut = exports.expoIn = exports.elasticInOut = exports.elasticIn = exports.elasticOut = exports.cubicInOut = exports.cubicOut = exports.cubicIn = exports.circInOut = exports.circOut = exports.circIn = exports.bounceInOut = exports.bounceIn = exports.bounceOut = exports.backInOut = exports.backOut = exports.backIn = void 0;
+const backIn = (time, overshoot = 1.70158) => {
     return time * time * ((overshoot + 1) * time - overshoot);
 };
-/**
- * @param {number} time
- * @param {number} [overshoot=1.70158]
- * @returns {number}
- */
-export var backOut = function (time, overshoot) {
-    if (overshoot === void 0) { overshoot = 1.70158; }
+exports.backIn = backIn;
+const backOut = (time, overshoot = 1.70158) => {
     time = time - 1;
     return time * time * ((overshoot + 1) * time + overshoot) + 1;
 };
-/**
- * @param {number} time
- * @param {number} [overshoot=1.70158]
- * @returns {number}
- */
-export var backInOut = function (time, overshoot) {
-    if (overshoot === void 0) { overshoot = 1.70158; }
+exports.backOut = backOut;
+const backInOut = (time, overshoot = 1.70158) => {
     time = time * 2;
     overshoot = overshoot * 1.525;
     if (time < 1) {
@@ -39,11 +26,8 @@ export var backInOut = function (time, overshoot) {
         return 0.5 * (time * time * ((overshoot + 1) * time + overshoot) + 2);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var bounceOut = function (time) {
+exports.backInOut = backInOut;
+const bounceOut = (time) => {
     if (time < 1 / 2.75) {
         return 7.5625 * time * time;
     }
@@ -57,45 +41,30 @@ export var bounceOut = function (time) {
         return 7.5625 * (time -= 2.625 / 2.75) * time + 0.984375;
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var bounceIn = function (time) {
-    return 1 - bounceOut(1 - time);
+exports.bounceOut = bounceOut;
+const bounceIn = (time) => {
+    return 1 - (0, exports.bounceOut)(1 - time);
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var bounceInOut = function (time) {
+exports.bounceIn = bounceIn;
+const bounceInOut = (time) => {
     if (time < 0.5) {
-        return bounceIn(time * 2) * 0.5;
+        return (0, exports.bounceIn)(time * 2) * 0.5;
     }
     else {
-        return bounceOut(time * 2 - 1) * 0.5 + 0.5;
+        return (0, exports.bounceOut)(time * 2 - 1) * 0.5 + 0.5;
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var circIn = function (time) {
+exports.bounceInOut = bounceInOut;
+const circIn = (time) => {
     return -(Math.sqrt(1 - time * time) - 1);
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var circOut = function (time) {
+exports.circIn = circIn;
+const circOut = (time) => {
     time = time - 1;
     return Math.sqrt(1 - time * time);
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var circInOut = function (time) {
+exports.circOut = circOut;
+const circInOut = (time) => {
     time = time * 2;
     if (time < 1) {
         return -0.5 * (Math.sqrt(1 - time * time) - 1);
@@ -105,26 +74,17 @@ export var circInOut = function (time) {
         return 0.5 * (Math.sqrt(1 - time * time) + 1);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var cubicIn = function (time) {
+exports.circInOut = circInOut;
+const cubicIn = (time) => {
     return time * time * time;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var cubicOut = function (time) {
+exports.cubicIn = cubicIn;
+const cubicOut = (time) => {
     time = time - 1;
     return time * time * time + 1;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var cubicInOut = function (time) {
+exports.cubicOut = cubicOut;
+const cubicInOut = (time) => {
     time = time * 2;
     if (time < 1) {
         return 0.5 * time * time * time;
@@ -134,15 +94,8 @@ export var cubicInOut = function (time) {
         return 0.5 * (time * time * time + 2);
     }
 };
-/**
- * @param {number} time
- * @param {number} [amplitude=1]
- * @param {number} [period=0.3]
- * @returns {number}
- */
-export var elasticOut = function (time, amplitude, period) {
-    if (amplitude === void 0) { amplitude = 1; }
-    if (period === void 0) { period = 0.3; }
+exports.cubicInOut = cubicInOut;
+const elasticOut = (time, amplitude = 1, period = 0.3) => {
     if (time === 0) {
         return 0;
     }
@@ -150,22 +103,15 @@ export var elasticOut = function (time, amplitude, period) {
         return 1;
     }
     else {
-        var overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
+        const overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
         return (amplitude *
-            Math.pow(2, (-10 * time)) *
+            2 ** (-10 * time) *
             Math.sin(((time - overshoot) * (2 * Math.PI)) / period) +
             1);
     }
 };
-/**
- * @param {number} time
- * @param {number} [amplitude=1]
- * @param {number} [period=0.3]
- * @returns {number}
- */
-export var elasticIn = function (time, amplitude, period) {
-    if (amplitude === void 0) { amplitude = 1; }
-    if (period === void 0) { period = 0.3; }
+exports.elasticOut = elasticOut;
+const elasticIn = (time, amplitude = 1, period = 0.3) => {
     if (time === 0) {
         return 0;
     }
@@ -173,21 +119,14 @@ export var elasticIn = function (time, amplitude, period) {
         return 1;
     }
     else {
-        var overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
+        const overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
         time -= 1;
-        return (-(amplitude * Math.pow(2, (10 * time))) *
+        return (-(amplitude * 2 ** (10 * time)) *
             Math.sin(((time - overshoot) * (2 * Math.PI)) / period));
     }
 };
-/**
- * @param {number} time
- * @param {number} [amplitude=1]
- * @param {number} [period=0.45]
- * @returns {number}
- */
-export var elasticInOut = function (time, amplitude, period) {
-    if (amplitude === void 0) { amplitude = 1; }
-    if (period === void 0) { period = 0.45; }
+exports.elasticIn = elasticIn;
+const elasticInOut = (time, amplitude = 1, period = 0.45) => {
     time = time * 2;
     if (time === 0) {
         return 0;
@@ -196,46 +135,37 @@ export var elasticInOut = function (time, amplitude, period) {
         return 1;
     }
     else {
-        var overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
+        const overshoot = (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
         time = time - 1;
         if (time < 0) {
             return (-0.5 *
-                (amplitude * Math.pow(2, (10 * time))) *
+                (amplitude * 2 ** (10 * time)) *
                 Math.sin((time - overshoot) * ((2 * Math.PI) / period)));
         }
         else {
             return (amplitude *
-                Math.pow(2, (-10 * time)) *
+                2 ** (-10 * time) *
                 Math.sin(((time - overshoot) * (2 * Math.PI)) / period) +
                 1);
         }
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var expoIn = function (time) {
+exports.elasticInOut = elasticInOut;
+const expoIn = (time) => {
     if (time === 0) {
         return 0;
     }
-    return Math.pow(2, (10 * (time - 1)));
+    return 2 ** (10 * (time - 1));
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var expoOut = function (time) {
+exports.expoIn = expoIn;
+const expoOut = (time) => {
     if (time === 1) {
         return 1;
     }
-    return -(Math.pow(2, (-10 * time))) + 1;
+    return -(2 ** (-10 * time)) + 1;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var expoInOut = function (time) {
+exports.expoOut = expoOut;
+const expoInOut = (time) => {
     time = time * 2;
     if (time === 0) {
         return 0;
@@ -244,38 +174,26 @@ export var expoInOut = function (time) {
         return 1;
     }
     else if (time < 1) {
-        return 0.5 * Math.pow(2, (10 * (time - 1)));
+        return 0.5 * 2 ** (10 * (time - 1));
     }
     else {
-        return 0.5 * (-(Math.pow(2, (-10 * (time - 1)))) + 2);
+        return 0.5 * (-(2 ** (-10 * (time - 1))) + 2);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var linear = function (time) {
+exports.expoInOut = expoInOut;
+const linear = (time) => {
     return time;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quadIn = function (time) {
+exports.linear = linear;
+const quadIn = (time) => {
     return time * time;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quadOut = function (time) {
+exports.quadIn = quadIn;
+const quadOut = (time) => {
     return -time * (time - 2);
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quadInOut = function (time) {
+exports.quadOut = quadOut;
+const quadInOut = (time) => {
     time = time * 2;
     if (time < 1) {
         return 0.5 * time * time;
@@ -285,26 +203,17 @@ export var quadInOut = function (time) {
         return -0.5 * (time * (time - 2) - 1);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quartIn = function (time) {
+exports.quadInOut = quadInOut;
+const quartIn = (time) => {
     return time * time * time * time;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quartOut = function (time) {
+exports.quartIn = quartIn;
+const quartOut = (time) => {
     time = time - 1;
     return -(time * time * time * time - 1);
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quartInOut = function (time) {
+exports.quartOut = quartOut;
+const quartInOut = (time) => {
     time = time * 2;
     if (time < 1) {
         return 0.5 * time * time * time * time;
@@ -314,26 +223,17 @@ export var quartInOut = function (time) {
         return -0.5 * (time * time * time * time - 2);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quintIn = function (time) {
+exports.quartInOut = quartInOut;
+const quintIn = (time) => {
     return time * time * time * time * time;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quintOut = function (time) {
+exports.quintIn = quintIn;
+const quintOut = (time) => {
     time = time - 1;
     return time * time * time * time * time + 1;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var quintInOut = function (time) {
+exports.quintOut = quintOut;
+const quintInOut = (time) => {
     time = time * 2;
     if (time < 1) {
         return 0.5 * time * time * time * time * time;
@@ -343,40 +243,23 @@ export var quintInOut = function (time) {
         return 0.5 * (time * time * time * time * time + 2);
     }
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var sineIn = function (time) {
+exports.quintInOut = quintInOut;
+const sineIn = (time) => {
     return -Math.cos(time * (Math.PI / 2)) + 1;
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var sineOut = function (time) {
+exports.sineIn = sineIn;
+const sineOut = (time) => {
     return Math.sin(time * (Math.PI / 2));
 };
-/**
- * @param {number} time
- * @returns {number}
- */
-export var sineInOut = function (time) {
+exports.sineOut = sineOut;
+const sineInOut = (time) => {
     return -0.5 * (Math.cos(Math.PI * time) - 1);
 };
-/**
- * @callback EasingFunction
- * @param {number} time
- * @returns {number}
- */
+exports.sineInOut = sineInOut;
 /**
  * Helper function to use different easing functions above and below 0.5
- * @param {number} time
- * @param {EasingFunction} start
- * @param {EasingFunction} end
- * @returns {number}
  */
-export var inOut = function (time, start, end) {
+const inOut = (time, start, end) => {
     time = time * 2;
     if (time <= 1) {
         return start(time) * 0.5;
@@ -385,21 +268,14 @@ export var inOut = function (time, start, end) {
         return 0.5 + end(time - 1.0);
     }
 };
+exports.inOut = inOut;
 /**
  * Helper function to ease with a function between two values.
- *
- * @param {EasingFunction} fn Easing function taking only time as a parameter
- * @param {number} time
- * @param {number} from Starting value at 0 time
- * @param {number} to Ending value at 1 time
- * @returns {number}
  */
-export var ease = function (fn, time, from, to) { return from + fn(time) * (to - from); };
+const ease = (fn, time, from, to) => from + fn(time) * (to - from);
+exports.ease = ease;
 /**
  * Convenience function to linearly interpolate between two values at a given time.
- *
- * @param {number} time
- * @param {number} from Starting value at 0 time
- * @param {number} to Ending value at 1 time
  */
-export var lerp = function (time, from, to) { return from + linear(time) * (to - from); };
+const lerp = (time, from, to) => from + (0, exports.linear)(time) * (to - from);
+exports.lerp = lerp;

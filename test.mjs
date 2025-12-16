@@ -1,4 +1,4 @@
-import { lerp, ease, quadIn, linear, elasticInOut } from './src/main.mjs';
+import { lerp, ease, quadIn, linear, elasticInOut } from './dist/main.js';
 // const { lerp, ease, quadIn, linear, elasticInOut } = require('@bluehexagons/easing');
 
 const time = 0.5;

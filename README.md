@@ -58,9 +58,9 @@ console.log(
 
 ### CommonJS
 
-TypeScript is used to compile a commonjs version of this module.
+This module provides both ESM and CommonJS exports. TypeScript is used to compile both versions.
 
-Import with, e.g., `const Easing = require('@bluehexagons/easing)`.
+Import with, e.g., `const Easing = require('@bluehexagons/easing')`.
 
 ## Contributing
 
@@ -68,6 +68,6 @@ Pull requests are welcome.
 
 ## TypeScript
 
-`src/main.d.mts` contains typings.
+This library is written in TypeScript and provides type definitions out of the box. The source code is in `src/main.ts`.
 
-To build TypeScript definitions for development, run `npm run build`
+To build TypeScript definitions and JavaScript output for development, run `npm run build`

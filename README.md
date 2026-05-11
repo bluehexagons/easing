@@ -7,7 +7,7 @@ All functions expect a time constraint of \[0-1\].
 Code heavily-adapted from https://github.com/jimjeffers/Easie
 which is itself adapted from http://robertpenner.com/easing
 
-MIT license.
+Apache-2.0 license.
 
 ## Installation
 

@@ -256,16 +256,22 @@ export const inOut = (
   if (time <= 1) {
     return start(time) * 0.5;
   } else {
-    return 0.5 + end(time - 1.0);
+    return 0.5 + end(time - 1.0) * 0.5;
   }
 };
 
 /**
  * Helper function to ease with a function between two values.
  */
-export const ease = (fn: EasingFunction, time: number, from: number, to: number): number => from + fn(time) * (to - from);
+export const ease = (
+  fn: EasingFunction,
+  time: number,
+  from: number,
+  to: number
+): number => from + fn(time) * (to - from);
 
 /**
  * Convenience function to linearly interpolate between two values at a given time.
  */
-export const lerp = (time: number, from: number, to: number): number => from + linear(time) * (to - from);
+export const lerp = (time: number, from: number, to: number): number =>
+  from + linear(time) * (to - from);

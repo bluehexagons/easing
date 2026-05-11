@@ -1,8 +1,8 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.4.2",
-  "license": "MIT",
+  "version": "0.4.3",
+  "license": "Apache-2.0",
   "author": "bluehexagons <this@bluehexagons.com>",
   "homepage": "https://github.com/bluehexagons/easing",
 
@@ -43,7 +43,11 @@
     "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
     "test": "node test.mjs",
     "build": "tsc",
-    "postbuild": "npm run cjs"
+    "postbuild": "npm run cjs",
+    "release": "node scripts/release.mjs",
+    "pretest": "npm run build",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build"
   },
 
   "keywords": [
@@ -56,6 +60,6 @@
     "cjs"
   ],
   "devDependencies": {
-    "typescript": "^5.4.2"
+    "typescript": "^6.0.3"
   }
 }

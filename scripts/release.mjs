@@ -5,6 +5,7 @@ const packageJson = JSON.parse(readFileSync(new URL('../package.json', import.me
 const version = packageJson.version;
 const remote = process.env.EASING_RELEASE_REMOTE || 'origin';
 const tagName = `v${version}`;
+const releaseNotes = `Release @bluehexagons/easing ${tagName}.`;
 
 const run = (command, args, options = {}) => {
   const result = spawnSync(command, args, {
@@ -43,11 +44,19 @@ const remoteTagExists = (tag) =>
     capture: true,
   }).status === 0;
 
+const releaseExists = (tag) =>
+  run('gh', ['release', 'view', tag], {
+    allowFailure: true,
+    capture: true,
+  }).status === 0;
+
 if (!/^\d+\.\d+\.\d+$/.test(version)) {
   throw new Error(`Package version must be semver x.y.z for release tagging, got ${version}`);
 }
 
 requireCleanTrackedWorktree();
+
+run('gh', ['--version'], { capture: true });
 
 if (localTagExists(tagName)) {
   throw new Error(`Release tag ${tagName} already exists locally`);
@@ -57,7 +66,13 @@ if (remoteTagExists(tagName)) {
   throw new Error(`Release tag ${tagName} already exists on ${remote}`);
 }
 
+if (releaseExists(tagName)) {
+  throw new Error(`GitHub Release ${tagName} already exists`);
+}
+
 run('npm', ['test']);
 run('npm', ['pack', '--dry-run']);
+requireCleanTrackedWorktree();
 run('git', ['tag', '-a', tagName, '-m', `Easing ${tagName}`]);
 run('git', ['push', remote, `refs/tags/${tagName}`]);
+run('gh', ['release', 'create', tagName, '--verify-tag', '--title', tagName, '--notes', releaseNotes]);

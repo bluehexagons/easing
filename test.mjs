@@ -1,4 +1,4 @@
-import { lerp, ease, quadIn, linear, elasticInOut, inOut } from './dist/main.js';
+import { lerp, ease, quadIn, linear, elasticInOut, inOut, backInOut } from './dist/main.js';
 // const { lerp, ease, quadIn, linear, elasticInOut } = require('@bluehexagons/easing');
 
 const time = 0.5;
@@ -69,6 +69,11 @@ check(
 check(
   ease(t => t ** 2, time, start, end),
   25,
+);
+
+check(
+  backInOut(1),
+  1,
 );
 
 // Use different easing functions for each half of an in/out easing curve

@@ -23,6 +23,7 @@ const backInOut = (time, overshoot = 1.70158) => {
         return 0.5 * (time * time * ((overshoot + 1) * time - overshoot));
     }
     else {
+        time = time - 2;
         return 0.5 * (time * time * ((overshoot + 1) * time + overshoot) + 2);
     }
 };

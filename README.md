@@ -2,7 +2,7 @@
 
 A simple easing library.
 
-All functions expect a time constraint of \[0-1\].
+All functions expect a time value in the range \[0-1\].
 
 Code heavily-adapted from https://github.com/jimjeffers/Easie
 which is itself adapted from http://robertpenner.com/easing
@@ -71,3 +71,5 @@ Pull requests are welcome.
 This library is written in TypeScript and provides type definitions out of the box. The source code is in `src/main.ts`.
 
 To build TypeScript definitions and JavaScript output for development, run `npm run build`
+
+Run the test suite with `npm test`.

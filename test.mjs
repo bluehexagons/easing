@@ -1,93 +1,85 @@
-import { lerp, ease, quadIn, linear, elasticInOut, inOut, backInOut } from './dist/main.js';
-// const { lerp, ease, quadIn, linear, elasticInOut } = require('@bluehexagons/easing');
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import * as esm from '@bluehexagons/easing';
+
+const cjs = createRequire(import.meta.url)('@bluehexagons/easing');
+
+const assertSame = (actual, expected, message) => {
+  assert.ok(actual === expected, `${message}: expected ${expected}, got ${actual}`);
+};
+
+const assertClose = (actual, expected, message) => {
+  assert.ok(
+    Math.abs(actual - expected) <= Number.EPSILON * 4,
+    `${message}: expected ${expected}, got ${actual}`,
+  );
+};
+
+const easingFunctions = [
+  'backIn',
+  'backOut',
+  'backInOut',
+  'bounceIn',
+  'bounceOut',
+  'bounceInOut',
+  'circIn',
+  'circOut',
+  'circInOut',
+  'cubicIn',
+  'cubicOut',
+  'cubicInOut',
+  'elasticIn',
+  'elasticOut',
+  'elasticInOut',
+  'expoIn',
+  'expoOut',
+  'expoInOut',
+  'linear',
+  'quadIn',
+  'quadOut',
+  'quadInOut',
+  'quartIn',
+  'quartOut',
+  'quartInOut',
+  'quintIn',
+  'quintOut',
+  'quintInOut',
+  'sineIn',
+  'sineOut',
+  'sineInOut',
+];
+
+// Verify that both package formats expose the same public runtime API.
+assert.deepEqual(Object.keys(cjs).sort(), Object.keys(esm).sort());
+for (const name of Object.keys(esm)) {
+  assert.equal(typeof cjs[name], 'function', `${name} is missing from CommonJS`);
+}
+
+for (const name of easingFunctions) {
+  for (const time of [0.25, 0.5, 0.75]) {
+    assertSame(cjs[name](time), esm[name](time), `CommonJS parity for ${name}(${time})`);
+  }
+}
+
+// Every easing function should preserve the conventional endpoints.
+for (const name of easingFunctions) {
+  const easing = esm[name];
+  assertClose(easing(0), 0, `${name}(0)`);
+  assertClose(easing(1), 1, `${name}(1)`);
+  assert.ok(Number.isFinite(easing(0.5)), `${name}(0.5) should be finite`);
+}
 
 const time = 0.5;
 const start = 0;
 const end = 100;
-let failed = false;
 
-/**
- * Tests something.
- * 
- * @param {number} v Value to test
- * @param {number} expect Expected value
- */
-const check = (v, expect) => {
-  const ok = v === expect;
+assertSame(esm.lerp(time, start, end), 50, 'lerp');
+assertSame(esm.ease(esm.quadIn, time, start, end), 25, 'ease with quadIn');
+assertSame(esm.ease((value) => value ** 2, time, start, end), 25, 'ease with a custom function');
+assertSame(esm.elasticInOut(time, 1.5, 0.3), 0, 'elasticInOut');
+assertSame(esm.backInOut(1), 1, 'backInOut endpoint');
 
-  if (!ok) {
-    failed = true;
-  }
-
-  console.log(ok ? 'OK' : ':(', v, expect);
-}
-
-/**
- * Concludes testing and exits the process.
- */
-const conclude = () => {
-  console.log(failed ? 'Test Failed' : 'Test Passed');
-  process.exit(failed ? 1 : 0);
-}
-
-// TODO: real tests
-
-// Linearly interpolate between a start and end value
-check(
-  lerp(time, start, end),
-  50,
-);
-
-
-// Apply an EasingFunction to interpolate between start and end values
-check(
-  ease(quadIn, time, start, end),
-  25,
-);
-
-// Use an EasingFunction directly
-check(
-  linear(time),
-  0.5,
-);
-
-// elasticInOut is a more complicated easing function
-const amplitude = 1.5;
-const period = 0.3;
-check(
-  elasticInOut(time, amplitude, period),
-  0,
-);
-
-// Using elasticInOut with the ease helper function, if you really want to
-check(
-  ease(t => elasticInOut(t, amplitude, period), time, start, end),
-  0,
-);
-
-// Or the ease helper function on its own (quadIn)
-check(
-  ease(t => t ** 2, time, start, end),
-  25,
-);
-
-check(
-  backInOut(1),
-  1,
-);
-
-// Use different easing functions for each half of an in/out easing curve
-check(
-  inOut(0, linear, linear),
-  0,
-);
-check(
-  inOut(0.5, linear, linear),
-  0.5,
-);
-check(
-  inOut(1, linear, linear),
-  1,
-);
-
-conclude();
+// Use different easing functions for each half of an in/out easing curve.
+assertSame(esm.inOut(0, esm.linear, esm.linear), 0, 'inOut at start');
+assertSame(esm.inOut(0.5, esm.linear, esm.linear), 0.5, 'inOut midpoint');
+assertSame(esm.inOut(1, esm.linear, esm.linear), 1, 'inOut at end');

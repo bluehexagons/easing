@@ -59,14 +59,15 @@
     "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
     "test": "node test.mjs && npm run test:types && npm run docs:check",
     "test:types": "tsc --project test/tsconfig.json",
+    "prebuild": "node scripts/clean.mjs all",
     "build": "tsc",
     "postbuild": "npm run cjs",
+    "precjs": "node scripts/clean.mjs cjs",
     "docs:curves": "npm run build && node scripts/curve-gallery.mjs",
     "docs:check": "node scripts/curve-gallery.mjs --check",
     "release": "node scripts/release.mjs",
     "pretest": "npm run build",
-    "prepack": "npm run build",
-    "prepublishOnly": "npm run build"
+    "prepack": "npm run build"
   },
 
   "keywords": [

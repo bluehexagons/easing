@@ -137,39 +137,18 @@ export const elasticIn = (time: number, amplitude: number = 1, period: number = 
   } else if (time === 1) {
     return 1;
   } else {
-    time -= 1;
     return (
-      -(amplitude * 2 ** (10 * time)) *
-      Math.sin(((time - overshoot) * (2 * Math.PI)) / period)
+      -(amplitude * 2 ** (10 * (time - 1))) *
+      Math.sin(((1 - time - overshoot) * (2 * Math.PI)) / period)
     );
   }
 };
 
 export const elasticInOut = (time: number, amplitude: number = 1, period: number = 0.45): number => {
-  const overshoot = elasticShift(amplitude, period);
-  time = time * 2;
-  if (time === 0) {
-    return 0;
-  } else if (time === 2) {
-    return 1;
-  } else {
-    time = time - 1;
-    if (time < 0) {
-      return (
-        -0.5 *
-        (amplitude * 2 ** (10 * time)) *
-        Math.sin((time - overshoot) * ((2 * Math.PI) / period))
-      );
-    } else {
-      return (
-        0.5 *
-          amplitude *
-          2 ** (-10 * time) *
-          Math.sin(((time - overshoot) * (2 * Math.PI)) / period) +
-        1
-      );
-    }
+  if (time < 0.5) {
+    return elasticIn(time * 2, amplitude, period) * 0.5;
   }
+  return elasticOut(time * 2 - 1, amplitude, period) * 0.5 + 0.5;
 };
 
 export const expoIn = (time: number): number => {
@@ -340,6 +319,9 @@ export const clamp = (
   minimum: number = 0,
   maximum: number = 1
 ): EasingFunction => {
+  if (!Number.isFinite(minimum) || !Number.isFinite(maximum)) {
+    throw new RangeError('Clamp bounds must be finite numbers');
+  }
   if (minimum > maximum) {
     throw new RangeError('Clamp minimum must be less than or equal to maximum');
   }
@@ -384,7 +366,7 @@ export const cubicBezier = (
         return estimate;
       }
       const currentSlope = slope(estimate, x1, x2);
-      if (Math.abs(currentSlope) < 1e-7) {
+      if (Math.abs(currentSlope) < 1e-7 || estimate < 0 || estimate > 1) {
         break;
       }
       estimate -= difference / currentSlope;
@@ -451,15 +433,16 @@ export const spring = (options: SpringOptions = {}): EasingFunction => {
 
   const angularFrequency = Math.sqrt(stiffness / mass);
   const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
+  const criticalTolerance = 1e-8;
   const displacement = (seconds: number): number => {
-    if (dampingRatio < 1) {
+    if (dampingRatio < 1 - criticalTolerance) {
       const dampedFrequency = angularFrequency * Math.sqrt(1 - dampingRatio * dampingRatio);
       const sineCoefficient = (velocity - dampingRatio * angularFrequency) / dampedFrequency;
       return Math.exp(-dampingRatio * angularFrequency * seconds) *
         (-Math.cos(dampedFrequency * seconds) +
           sineCoefficient * Math.sin(dampedFrequency * seconds));
     }
-    if (dampingRatio === 1) {
+    if (dampingRatio <= 1 + criticalTolerance) {
       return (-1 + (velocity - angularFrequency) * seconds) *
         Math.exp(-angularFrequency * seconds);
     }

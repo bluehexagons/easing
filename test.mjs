@@ -4,6 +4,7 @@ import * as esm from '@bluehexagons/easing';
 import { easings } from '@bluehexagons/easing/named';
 
 const cjs = createRequire(import.meta.url)('@bluehexagons/easing');
+const cjsNamed = createRequire(import.meta.url)('@bluehexagons/easing/named');
 
 const assertSame = (actual, expected, message) => {
   assert.ok(actual === expected, `${message}: expected ${expected}, got ${actual}`);
@@ -88,6 +89,23 @@ for (const family of ['sine', 'quad', 'cubic', 'quart', 'quint', 'expo', 'circ',
   }
 }
 
+for (const amplitude of [1, 1.25, 2, 5]) {
+  for (const period of [0.1, 0.3, 0.8]) {
+    for (const time of [0.1, 0.25, 0.4]) {
+      assertClose(
+        esm.elasticOut(time, amplitude, period),
+        1 - esm.elasticIn(1 - time, amplitude, period),
+        `configured elastic reversal for amplitude ${amplitude}, period ${period}`,
+      );
+      assertClose(
+        esm.elasticInOut(time, amplitude, period),
+        1 - esm.elasticInOut(1 - time, amplitude, period),
+        `configured elastic symmetry for amplitude ${amplitude}, period ${period}`,
+      );
+    }
+  }
+}
+
 const time = 0.5;
 const start = 0;
 const end = 100;
@@ -116,12 +134,23 @@ assertSame(combined(0.75), 0.875, 'combined in/out second half');
 assertClose(esm.reverse(esm.quadIn)(0.25), esm.quadOut(0.25), 'reverse');
 assertSame(esm.clamp(esm.backOut)(0.5), 1, 'clamp overshoot');
 assert.throws(() => esm.clamp(esm.linear, 1, 0), RangeError);
+assert.throws(() => esm.clamp(esm.linear, Number.NaN, 1), RangeError);
 
 const cssEase = esm.cubicBezier(0.25, 0.1, 0.25, 1);
 assertSame(cssEase(0), 0, 'cubicBezier start');
 assertSame(cssEase(1), 1, 'cubicBezier end');
 assertClose(cssEase(0.5), 0.8024033876954126, 'CSS ease midpoint');
 assert.throws(() => esm.cubicBezier(-0.1, 0, 0.5, 1), RangeError);
+for (const controls of [[0, 0, 1, 1], [0, 1, 0, 1], [1, 0, 1, 0], [0.42, 0, 0.58, 1]]) {
+  const curve = esm.cubicBezier(...controls);
+  let previous = curve(0);
+  for (let sample = 1; sample <= 100; sample += 1) {
+    const value = curve(sample / 100);
+    assert.ok(Number.isFinite(value), `cubicBezier ${controls} should be finite at sample ${sample}`);
+    assert.ok(value >= previous - 1e-12, `cubicBezier ${controls} should be monotonic`);
+    previous = value;
+  }
+}
 
 assertSame(esm.steps(4)(0.24), 0, 'steps end before first boundary');
 assertSame(esm.steps(4)(0.25), 0.25, 'steps end at first boundary');
@@ -135,7 +164,7 @@ for (let sample = 0; sample <= 100; sample += 1) {
   assert.ok(Number.isFinite(spring(sample / 100)), `spring should be finite at sample ${sample}`);
 }
 assert.throws(() => esm.spring({ mass: 0 }), RangeError);
-for (const damping of [5, 20, 30]) {
+for (const damping of [5, 19.99999999, 20, 20.00000001, 30]) {
   const configuredSpring = esm.spring({ damping });
   for (let sample = 0; sample <= 100; sample += 1) {
     assert.ok(
@@ -146,6 +175,11 @@ for (const damping of [5, 20, 30]) {
 }
 
 assert.deepEqual(Object.keys(easings).sort(), [...easingFunctions].sort());
+assert.deepEqual(Object.keys(cjsNamed.easings).sort(), [...easingFunctions].sort());
 for (const [name, easing] of Object.entries(easings)) {
   assertSame(easing, esm[name], `named registry entry ${name}`);
+  assertSame(cjsNamed.easings[name](0.37), easing(0.37), `CommonJS named registry entry ${name}`);
 }
+
+assertClose(cjs.cubicBezier(0.25, 0.1, 0.25, 1)(0.5), cssEase(0.5), 'CommonJS cubicBezier');
+assertClose(cjs.spring()(0.5), spring(0.5), 'CommonJS spring');

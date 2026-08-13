@@ -7,7 +7,7 @@ Small, dependency-free easing functions for JavaScript and TypeScript. The packa
 ## Install
 
 ```sh
-npm install @bluehexagons/easing
+npm install https://codeload.github.com/bluehexagons/easing/tar.gz/refs/tags/v0.5.0
 ```
 
 ## Use
@@ -71,6 +71,6 @@ npm test
 npm run docs:curves
 ```
 
-Releases are created with `npm run release` after updating the version. GitHub Actions verifies supported Node versions and publishes releases to npm through trusted publishing.
+Releases are created with `npm run release` after updating the version. GitHub Actions verifies the supported Node versions.
 
 Derived from [Easie](https://github.com/jimjeffers/Easie) and Robert Penner's easing equations. Licensed under [Apache-2.0](LICENSE).

@@ -1,11 +1,9 @@
-import { renameSync } from 'node:fs';
+import { rmSync, writeFileSync } from 'node:fs';
 
-// Rename the compiled .js file to .cjs for CommonJS
+// Mark the secondary build as CommonJS without duplicating the TypeScript sources.
 try {
-  renameSync(
-    new URL('./cjs/main.js', import.meta.url),
-    new URL('./cjs/main.cjs', import.meta.url),
-  );
+  rmSync(new URL('./cjs/main.cjs', import.meta.url), { force: true });
+  writeFileSync(new URL('./cjs/package.json', import.meta.url), '{"type":"commonjs"}\n');
 } catch (error) {
-  throw new Error('Failed to create the CommonJS build', { cause: error });
+  throw new Error('Failed to mark the CommonJS build', { cause: error });
 }

@@ -1,7 +1,7 @@
 {
   "name": "@bluehexagons/easing",
   "description": "A light library of easing functions",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "license": "Apache-2.0",
   "author": "bluehexagons <this@bluehexagons.com>",
   "homepage": "https://github.com/bluehexagons/easing",
@@ -21,17 +21,33 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=15.0.0"
+    "node": ">=22.22.1"
   },
   "types": "./dist/main.d.ts",
-  "main": "./dist/main.js",
+  "main": "./cjs/main.js",
   "module": "./dist/main.js",
   "exports": {
     ".": {
-      "types": "./dist/main.d.ts",
-      "import": "./dist/main.js",
-      "require": "./cjs/main.cjs",
+      "import": {
+        "types": "./dist/main.d.ts",
+        "default": "./dist/main.js"
+      },
+      "require": {
+        "types": "./cjs/main.d.ts",
+        "default": "./cjs/main.js"
+      },
       "default": "./dist/main.js"
+    },
+    "./named": {
+      "import": {
+        "types": "./dist/named.d.ts",
+        "default": "./dist/named.js"
+      },
+      "require": {
+        "types": "./cjs/named.d.ts",
+        "default": "./cjs/named.js"
+      },
+      "default": "./dist/named.js"
     },
     "./package.json": "./package.json"
   },
@@ -41,9 +57,12 @@
 
   "scripts": {
     "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
-    "test": "node test.mjs",
+    "test": "node test.mjs && npm run test:types && npm run docs:check",
+    "test:types": "tsc --project test/tsconfig.json",
     "build": "tsc",
     "postbuild": "npm run cjs",
+    "docs:curves": "npm run build && node scripts/curve-gallery.mjs",
+    "docs:check": "node scripts/curve-gallery.mjs --check",
     "release": "node scripts/release.mjs",
     "pretest": "npm run build",
     "prepack": "npm run build",
@@ -57,7 +76,8 @@
   ],
   "files": [
     "dist",
-    "cjs"
+    "cjs",
+    "docs"
   ],
   "devDependencies": {
     "typescript": "^7.0.2"

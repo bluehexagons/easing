@@ -1,3 +1,16 @@
+export type EasingFunction = (time: number) => number;
+export interface ElasticOptions {
+    amplitude?: number;
+    period?: number;
+}
+export interface SpringOptions {
+    mass?: number;
+    stiffness?: number;
+    damping?: number;
+    velocity?: number;
+    duration?: number;
+}
+export type StepPosition = 'start' | 'end';
 export declare const backIn: (time: number, overshoot?: number) => number;
 export declare const backOut: (time: number, overshoot?: number) => number;
 export declare const backInOut: (time: number, overshoot?: number) => number;
@@ -29,7 +42,6 @@ export declare const quintInOut: (time: number) => number;
 export declare const sineIn: (time: number) => number;
 export declare const sineOut: (time: number) => number;
 export declare const sineInOut: (time: number) => number;
-export type EasingFunction = (time: number) => number;
 /**
  * Helper function to use different easing functions above and below 0.5
  */
@@ -42,3 +54,21 @@ export declare const ease: (fn: EasingFunction, time: number, from: number, to: 
  * Convenience function to linearly interpolate between two values at a given time.
  */
 export declare const lerp: (time: number, from: number, to: number) => number;
+/** Create an elastic-in curve with reusable parameters. */
+export declare const createElasticIn: (options?: ElasticOptions) => EasingFunction;
+/** Create an elastic-out curve with reusable parameters. */
+export declare const createElasticOut: (options?: ElasticOptions) => EasingFunction;
+/** Create an elastic-in-out curve with reusable parameters. */
+export declare const createElasticInOut: (options?: ElasticOptions) => EasingFunction;
+/** Create a curve that uses one easing function for each half. */
+export declare const combineInOut: (start: EasingFunction, end: EasingFunction) => EasingFunction;
+/** Reverse an easing function in time and value. */
+export declare const reverse: (fn: EasingFunction) => EasingFunction;
+/** Clamp an easing function's output to a range. */
+export declare const clamp: (fn: EasingFunction, minimum?: number, maximum?: number) => EasingFunction;
+/** Create an easing function equivalent to CSS cubic-bezier(). */
+export declare const cubicBezier: (x1: number, y1: number, x2: number, y2: number) => EasingFunction;
+/** Create a stepped easing curve. */
+export declare const steps: (count: number, position?: StepPosition) => EasingFunction;
+/** Create a normalized damped-spring easing curve. */
+export declare const spring: (options?: SpringOptions) => EasingFunction;

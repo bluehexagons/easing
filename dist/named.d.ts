@@ -1,0 +1,36 @@
+import { backIn, backInOut, backOut, bounceIn, bounceInOut, bounceOut, circIn, circInOut, circOut, cubicIn, cubicInOut, cubicOut, elasticIn, elasticInOut, elasticOut, expoIn, expoInOut, expoOut, linear, quadIn, quadInOut, quadOut, quartIn, quartInOut, quartOut, quintIn, quintInOut, quintOut, sineIn, sineInOut, sineOut } from './main.js';
+/** Named, parameter-free easing curves for configuration-driven animation. */
+export declare const easings: Readonly<{
+    linear: typeof linear;
+    sineIn: typeof sineIn;
+    sineOut: typeof sineOut;
+    sineInOut: typeof sineInOut;
+    quadIn: typeof quadIn;
+    quadOut: typeof quadOut;
+    quadInOut: typeof quadInOut;
+    cubicIn: typeof cubicIn;
+    cubicOut: typeof cubicOut;
+    cubicInOut: typeof cubicInOut;
+    quartIn: typeof quartIn;
+    quartOut: typeof quartOut;
+    quartInOut: typeof quartInOut;
+    quintIn: typeof quintIn;
+    quintOut: typeof quintOut;
+    quintInOut: typeof quintInOut;
+    expoIn: typeof expoIn;
+    expoOut: typeof expoOut;
+    expoInOut: typeof expoInOut;
+    circIn: typeof circIn;
+    circOut: typeof circOut;
+    circInOut: typeof circInOut;
+    backIn: typeof backIn;
+    backOut: typeof backOut;
+    backInOut: typeof backInOut;
+    bounceIn: typeof bounceIn;
+    bounceOut: typeof bounceOut;
+    bounceInOut: typeof bounceInOut;
+    elasticIn: typeof elasticIn;
+    elasticOut: typeof elasticOut;
+    elasticInOut: typeof elasticInOut;
+}>;
+export type EasingName = keyof typeof easings;

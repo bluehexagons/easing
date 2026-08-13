@@ -1,0 +1,38 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.easings = void 0;
+const main_js_1 = require("./main.js");
+/** Named, parameter-free easing curves for configuration-driven animation. */
+exports.easings = Object.freeze({
+    linear: main_js_1.linear,
+    sineIn: main_js_1.sineIn,
+    sineOut: main_js_1.sineOut,
+    sineInOut: main_js_1.sineInOut,
+    quadIn: main_js_1.quadIn,
+    quadOut: main_js_1.quadOut,
+    quadInOut: main_js_1.quadInOut,
+    cubicIn: main_js_1.cubicIn,
+    cubicOut: main_js_1.cubicOut,
+    cubicInOut: main_js_1.cubicInOut,
+    quartIn: main_js_1.quartIn,
+    quartOut: main_js_1.quartOut,
+    quartInOut: main_js_1.quartInOut,
+    quintIn: main_js_1.quintIn,
+    quintOut: main_js_1.quintOut,
+    quintInOut: main_js_1.quintInOut,
+    expoIn: main_js_1.expoIn,
+    expoOut: main_js_1.expoOut,
+    expoInOut: main_js_1.expoInOut,
+    circIn: main_js_1.circIn,
+    circOut: main_js_1.circOut,
+    circInOut: main_js_1.circInOut,
+    backIn: main_js_1.backIn,
+    backOut: main_js_1.backOut,
+    backInOut: main_js_1.backInOut,
+    bounceIn: main_js_1.bounceIn,
+    bounceOut: main_js_1.bounceOut,
+    bounceInOut: main_js_1.bounceInOut,
+    elasticIn: main_js_1.elasticIn,
+    elasticOut: main_js_1.elasticOut,
+    elasticInOut: main_js_1.elasticInOut
+});

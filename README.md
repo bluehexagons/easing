@@ -1,75 +1,76 @@
 # @bluehexagons/easing
 
-A simple easing library.
+Small, dependency-free easing functions for JavaScript and TypeScript. The package ships tree-shakeable ESM, CommonJS, and declarations for both module systems.
 
-All functions expect a time value in the range \[0-1\].
+![Easing curve gallery](docs/curves.svg)
 
-Code heavily-adapted from https://github.com/jimjeffers/Easie
-which is itself adapted from http://robertpenner.com/easing
+## Install
 
-Apache-2.0 license.
-
-## Installation
-
-`npm install @bluehexagons/easing`
-
-## Usage
-
-```js
-import { lerp, ease, quadIn, linear, elasticInOut } from '@bluehexagons/easing';
-// commonjs: const { lerp, ease, quadIn, linear, elasticInOut } = require('@bluehexagons/easing');
-
-const time = 0.5;
-const start = 0;
-const end = 100;
-
-// Linearly interpolate between a start and end value
-console.log(
-  lerp(time, start, end)
-);
-
-// Apply an EasingFunction to interpolate between start and end values
-console.log(
-  ease(quadIn, time, start, end)
-);
-
-// Use an EasingFunction directly
-console.log(
-  linear(time)
-);
-
-// elasticInOut is a more complicated easing function
-const amplitude = 1.5;
-const period = 0.3;
-console.log(
-  elasticInOut(time, amplitude, period)
-);
-
-// Using elasticInOut with the ease helper function, if you really want to
-console.log(
-  ease(t => elasticInOut(t, amplitude, period), time, start, end)
-);
-
-// Or the ease helper function on its own
-console.log(
-  ease(t => t ** 2, time, start, end)
-);
+```sh
+npm install @bluehexagons/easing
 ```
 
-### CommonJS
+## Use
 
-This module provides both ESM and CommonJS exports. TypeScript is used to compile both versions.
+```ts
+import {
+  createElasticInOut,
+  cubicBezier,
+  ease,
+  quadInOut,
+  spring
+} from '@bluehexagons/easing';
 
-Import with, e.g., `const Easing = require('@bluehexagons/easing')`.
+quadInOut(0.5);                    // 0.5
+ease(quadInOut, 0.5, 20, 100);    // 60
+cubicBezier(0.25, 0.1, 0.25, 1);  // CSS `ease`
+createElasticInOut({ amplitude: 1.5, period: 0.4 });
+spring({ stiffness: 120, damping: 14 });
+```
 
-## Contributing
+CommonJS uses the same API:
 
-Pull requests are welcome.
+```js
+const { ease, quadInOut } = require('@bluehexagons/easing');
+```
 
-## TypeScript
+Easing functions accept normalized time, usually from `0` to `1`. Values outside that range are extrapolated when the curve's math permits it. Overshooting curves can return values outside `[0, 1]`; wrap one with `clamp()` when that is undesirable.
 
-This library is written in TypeScript and provides type definitions out of the box. The source code is in `src/main.ts`.
+## API
 
-To build TypeScript definitions and JavaScript output for development, run `npm run build`
+The built-in families are `sine`, `quad`, `cubic`, `quart`, `quint`, `expo`, `circ`, `back`, `bounce`, and `elastic`. Each provides `In`, `Out`, and `InOut` variants, such as `cubicIn`, `cubicOut`, and `cubicInOut`. `linear` is also included.
 
-Run the test suite with `npm test`.
+| Function | Purpose |
+| --- | --- |
+| `ease(fn, time, from, to)` | Ease between two numeric values. |
+| `lerp(time, from, to)` | Linearly interpolate between two values. |
+| `inOut(time, first, second)` | Apply a different curve to each half. |
+| `combineInOut(first, second)` | Create the reusable form of `inOut`. |
+| `reverse(fn)` | Reverse a curve in time and value. |
+| `clamp(fn, min?, max?)` | Clamp a curve's output; defaults to `[0, 1]`. |
+| `createElasticIn/Out/InOut(options?)` | Configure an elastic curve once. Amplitude must be at least `1`; period must be positive. |
+| `cubicBezier(x1, y1, x2, y2)` | Create a CSS-compatible cubic Bézier curve. The x controls must be in `[0, 1]`. |
+| `steps(count, position?)` | Create a stepped curve using `start` or `end` positioning. |
+| `spring(options?)` | Create a normalized damped spring with mass, stiffness, damping, velocity, and duration-in-seconds controls. |
+
+Every reusable curve has the type `(time: number) => number`, exported as `EasingFunction`.
+
+For configuration-driven animation, import the parameter-free registry separately:
+
+```ts
+import { easings, type EasingName } from '@bluehexagons/easing/named';
+
+const name: EasingName = 'bounceOut';
+const value = easings[name](0.5);
+```
+
+## Development
+
+```sh
+npm test
+npm run docs:curves
+```
+
+Releases are created with `npm run release` after updating the version. GitHub Actions verifies supported Node versions and publishes releases to npm through trusted publishing.
+
+Derived from [Easie](https://github.com/jimjeffers/Easie) and Robert Penner's easing equations. Licensed under [Apache-2.0](LICENSE).

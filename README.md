@@ -7,7 +7,7 @@ Small, dependency-free easing functions for JavaScript and TypeScript. The packa
 ## Install
 
 ```sh
-npm install https://codeload.github.com/bluehexagons/easing/tar.gz/refs/tags/v0.5.0
+npm install https://codeload.github.com/bluehexagons/easing/tar.gz/refs/tags/v0.5.1
 ```
 
 ## Use

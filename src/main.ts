@@ -22,14 +22,58 @@ export interface SpringOptions {
 
 export type StepPosition = 'start' | 'end';
 
-const elasticShift = (amplitude: number, period: number): number => {
+interface ElasticParameters {
+  frequency: number;
+  phase: number;
+}
+
+const elasticParameters = (amplitude: number, period: number): ElasticParameters => {
   if (!Number.isFinite(amplitude) || amplitude < 1) {
     throw new RangeError('Elastic amplitude must be a finite number greater than or equal to 1');
   }
   if (!Number.isFinite(period) || period <= 0) {
     throw new RangeError('Elastic period must be a finite number greater than 0');
   }
-  return (period / (2 * Math.PI)) * Math.asin(1 / amplitude);
+  const frequency = (2 * Math.PI) / period;
+  if (!Number.isFinite(frequency)) {
+    throw new RangeError('Elastic period is too small to calculate a finite curve');
+  }
+  return { frequency, phase: Math.asin(1 / amplitude) };
+};
+
+const elasticOutValue = (
+  time: number,
+  amplitude: number,
+  parameters: ElasticParameters
+): number => {
+  if (time === 0 || time === 1) {
+    return time;
+  }
+  return amplitude * 2 ** (-10 * time) *
+    Math.sin(time * parameters.frequency - parameters.phase) + 1;
+};
+
+const elasticInValue = (
+  time: number,
+  amplitude: number,
+  parameters: ElasticParameters
+): number => {
+  if (time === 0 || time === 1) {
+    return time;
+  }
+  return -(amplitude * 2 ** (10 * (time - 1))) *
+    Math.sin((1 - time) * parameters.frequency - parameters.phase);
+};
+
+const elasticInOutValue = (
+  time: number,
+  amplitude: number,
+  parameters: ElasticParameters
+): number => {
+  if (time < 0.5) {
+    return elasticInValue(time * 2, amplitude, parameters) * 0.5;
+  }
+  return elasticOutValue(time * 2 - 1, amplitude, parameters) * 0.5 + 0.5;
 };
 
 export const backIn = (time: number, overshoot: number = 1.70158): number => {
@@ -115,40 +159,15 @@ export const cubicInOut = (time: number): number => {
 };
 
 export const elasticOut = (time: number, amplitude: number = 1, period: number = 0.3): number => {
-  const overshoot = elasticShift(amplitude, period);
-  if (time === 0) {
-    return 0;
-  } else if (time === 1) {
-    return 1;
-  } else {
-    return (
-      amplitude *
-        2 ** (-10 * time) *
-        Math.sin(((time - overshoot) * (2 * Math.PI)) / period) +
-      1
-    );
-  }
+  return elasticOutValue(time, amplitude, elasticParameters(amplitude, period));
 };
 
 export const elasticIn = (time: number, amplitude: number = 1, period: number = 0.3): number => {
-  const overshoot = elasticShift(amplitude, period);
-  if (time === 0) {
-    return 0;
-  } else if (time === 1) {
-    return 1;
-  } else {
-    return (
-      -(amplitude * 2 ** (10 * (time - 1))) *
-      Math.sin(((1 - time - overshoot) * (2 * Math.PI)) / period)
-    );
-  }
+  return elasticInValue(time, amplitude, elasticParameters(amplitude, period));
 };
 
 export const elasticInOut = (time: number, amplitude: number = 1, period: number = 0.45): number => {
-  if (time < 0.5) {
-    return elasticIn(time * 2, amplitude, period) * 0.5;
-  }
-  return elasticOut(time * 2 - 1, amplitude, period) * 0.5 + 0.5;
+  return elasticInOutValue(time, amplitude, elasticParameters(amplitude, period));
 };
 
 export const expoIn = (time: number): number => {
@@ -285,22 +304,22 @@ export const lerp = (time: number, from: number, to: number): number =>
 /** Create an elastic-in curve with reusable parameters. */
 export const createElasticIn = (options: ElasticOptions = {}): EasingFunction => {
   const { amplitude = 1, period = 0.3 } = options;
-  elasticShift(amplitude, period);
-  return (time) => elasticIn(time, amplitude, period);
+  const parameters = elasticParameters(amplitude, period);
+  return (time) => elasticInValue(time, amplitude, parameters);
 };
 
 /** Create an elastic-out curve with reusable parameters. */
 export const createElasticOut = (options: ElasticOptions = {}): EasingFunction => {
   const { amplitude = 1, period = 0.3 } = options;
-  elasticShift(amplitude, period);
-  return (time) => elasticOut(time, amplitude, period);
+  const parameters = elasticParameters(amplitude, period);
+  return (time) => elasticOutValue(time, amplitude, parameters);
 };
 
 /** Create an elastic-in-out curve with reusable parameters. */
 export const createElasticInOut = (options: ElasticOptions = {}): EasingFunction => {
   const { amplitude = 1, period = 0.45 } = options;
-  elasticShift(amplitude, period);
-  return (time) => elasticInOut(time, amplitude, period);
+  const parameters = elasticParameters(amplitude, period);
+  return (time) => elasticInOutValue(time, amplitude, parameters);
 };
 
 /** Create a curve that uses one easing function for each half. */
@@ -390,9 +409,18 @@ export const cubicBezier = (
     return estimate;
   };
 
+  const startSlope = x1 > 0 ? y1 / x1 : x2 > 0 ? y2 / x2 : 0;
+  const endSlope = x2 < 1 ? (1 - y2) / (1 - x2) : x1 < 1 ? (1 - y1) / (1 - x1) : 0;
+
   return (time) => {
     if (time === 0 || time === 1) {
       return time;
+    }
+    if (time < 0) {
+      return startSlope === 0 ? 0 : time * startSlope;
+    }
+    if (time > 1) {
+      return endSlope === 0 ? 1 : 1 + (time - 1) * endSlope;
     }
     return sample(solveTime(time), y1, y2);
   };
@@ -400,8 +428,8 @@ export const cubicBezier = (
 
 /** Create a stepped easing curve. */
 export const steps = (count: number, position: StepPosition = 'end'): EasingFunction => {
-  if (!Number.isInteger(count) || count < 1) {
-    throw new RangeError('Step count must be a positive integer');
+  if (!Number.isSafeInteger(count) || count < 1) {
+    throw new RangeError('Step count must be a positive safe integer');
   }
   if (position !== 'start' && position !== 'end') {
     throw new RangeError("Step position must be either 'start' or 'end'");
@@ -433,31 +461,45 @@ export const spring = (options: SpringOptions = {}): EasingFunction => {
 
   const angularFrequency = Math.sqrt(stiffness / mass);
   const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
+  if (!Number.isFinite(angularFrequency) || angularFrequency <= 0 || !Number.isFinite(dampingRatio)) {
+    throw new RangeError('Spring options must produce finite frequency and damping');
+  }
   const criticalTolerance = 1e-8;
-  const displacement = (seconds: number): number => {
-    if (dampingRatio < 1 - criticalTolerance) {
-      const dampedFrequency = angularFrequency * Math.sqrt(1 - dampingRatio * dampingRatio);
-      const sineCoefficient = (velocity - dampingRatio * angularFrequency) / dampedFrequency;
-      return Math.exp(-dampingRatio * angularFrequency * seconds) *
+  let displacement: (seconds: number) => number;
+  if (dampingRatio < 1 - criticalTolerance) {
+    const dampedFrequency = angularFrequency * Math.sqrt(1 - dampingRatio * dampingRatio);
+    const sineCoefficient = (velocity - dampingRatio * angularFrequency) / dampedFrequency;
+    if (!Number.isFinite(dampedFrequency) || !Number.isFinite(sineCoefficient)) {
+      throw new RangeError('Spring options must produce finite response coefficients');
+    }
+    displacement = (seconds) =>
+      Math.exp(-dampingRatio * angularFrequency * seconds) *
         (-Math.cos(dampedFrequency * seconds) +
           sineCoefficient * Math.sin(dampedFrequency * seconds));
-    }
-    if (dampingRatio <= 1 + criticalTolerance) {
-      return (-1 + (velocity - angularFrequency) * seconds) *
+  } else if (dampingRatio <= 1 + criticalTolerance) {
+    displacement = (seconds) =>
+      (-1 + (velocity - angularFrequency) * seconds) *
         Math.exp(-angularFrequency * seconds);
-    }
+  } else {
     const root = Math.sqrt(dampingRatio * dampingRatio - 1);
-    const firstRoot = -angularFrequency * (dampingRatio - root);
-    const secondRoot = -angularFrequency * (dampingRatio + root);
+    const rootSum = dampingRatio + root;
+    const firstRoot = -angularFrequency / rootSum;
+    const secondRoot = -angularFrequency * rootSum;
+    if (!Number.isFinite(firstRoot) || !Number.isFinite(secondRoot)) {
+      throw new RangeError('Spring options must produce finite response roots');
+    }
     const firstCoefficient = (velocity + secondRoot) / (firstRoot - secondRoot);
     const secondCoefficient = -1 - firstCoefficient;
-    return firstCoefficient * Math.exp(firstRoot * seconds) +
+    if (!Number.isFinite(firstCoefficient) || !Number.isFinite(secondCoefficient)) {
+      throw new RangeError('Spring options must produce finite response coefficients');
+    }
+    displacement = (seconds) => firstCoefficient * Math.exp(firstRoot * seconds) +
       secondCoefficient * Math.exp(secondRoot * seconds);
-  };
+  }
   const response = (time: number): number => 1 + displacement(time * duration);
   const finalResponse = response(1);
-  if (Math.abs(finalResponse) < Number.EPSILON) {
-    throw new RangeError('Spring duration is too short to normalize');
+  if (!Number.isFinite(finalResponse) || Math.abs(finalResponse) < Number.EPSILON) {
+    throw new RangeError('Spring response cannot be normalized for these options');
   }
   return (time) => {
     if (time === 0 || time === 1) {

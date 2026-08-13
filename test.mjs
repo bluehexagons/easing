@@ -126,7 +126,9 @@ assertSame(configuredElastic(0.5), 0.5, 'configured elastic midpoint');
 assert.throws(() => esm.elasticIn(0.5, 0.5), RangeError);
 assert.throws(() => esm.elasticIn(0, 0.5), RangeError);
 assert.throws(() => esm.elasticOut(0.5, 1, 0), RangeError);
+assert.throws(() => esm.elasticOut(0.5, 1, Number.MIN_VALUE), RangeError);
 assert.throws(() => esm.createElasticInOut({ amplitude: Number.NaN }), RangeError);
+assert.ok(Number.isFinite(esm.elasticInOut(0.25, 1, Number.MAX_VALUE)));
 
 const combined = esm.combineInOut(esm.quadIn, esm.quadOut);
 assertSame(combined(0.25), 0.125, 'combined in/out first half');
@@ -141,6 +143,8 @@ assertSame(cssEase(0), 0, 'cubicBezier start');
 assertSame(cssEase(1), 1, 'cubicBezier end');
 assertClose(cssEase(0.5), 0.8024033876954126, 'CSS ease midpoint');
 assert.throws(() => esm.cubicBezier(-0.1, 0, 0.5, 1), RangeError);
+assertClose(cssEase(-0.5), -0.2, 'CSS ease extrapolation before start');
+assertSame(cssEase(1.5), 1, 'CSS ease extrapolation after end');
 for (const controls of [[0, 0, 1, 1], [0, 1, 0, 1], [1, 0, 1, 0], [0.42, 0, 0.58, 1]]) {
   const curve = esm.cubicBezier(...controls);
   let previous = curve(0);
@@ -156,6 +160,7 @@ assertSame(esm.steps(4)(0.24), 0, 'steps end before first boundary');
 assertSame(esm.steps(4)(0.25), 0.25, 'steps end at first boundary');
 assertSame(esm.steps(4, 'start')(0.01), 0.25, 'steps start');
 assert.throws(() => esm.steps(0), RangeError);
+assert.throws(() => esm.steps(Number.MAX_SAFE_INTEGER + 1), RangeError);
 
 const spring = esm.spring();
 assertSame(spring(0), 0, 'spring start');
@@ -164,6 +169,11 @@ for (let sample = 0; sample <= 100; sample += 1) {
   assert.ok(Number.isFinite(spring(sample / 100)), `spring should be finite at sample ${sample}`);
 }
 assert.throws(() => esm.spring({ mass: 0 }), RangeError);
+assert.throws(() => esm.spring({ mass: Number.MIN_VALUE }), RangeError);
+assert.throws(
+  () => esm.spring({ mass: Number.MAX_VALUE, stiffness: Number.MIN_VALUE }),
+  RangeError,
+);
 for (const damping of [5, 19.99999999, 20, 20.00000001, 30]) {
   const configuredSpring = esm.spring({ damping });
   for (let sample = 0; sample <= 100; sample += 1) {

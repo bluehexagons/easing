@@ -30,6 +30,8 @@ import {
   sineIn,
   sineInOut,
   sineOut,
+  smoothstep,
+  smootherstep,
   type EasingFunction
 } from './main.js';
 
@@ -39,6 +41,8 @@ export const easings = Object.freeze({
   sineIn,
   sineOut,
   sineInOut,
+  smoothstep,
+  smootherstep,
   quadIn,
   quadOut,
   quadInOut,

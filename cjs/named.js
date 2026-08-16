@@ -8,6 +8,8 @@ exports.easings = Object.freeze({
     sineIn: main_js_1.sineIn,
     sineOut: main_js_1.sineOut,
     sineInOut: main_js_1.sineInOut,
+    smoothstep: main_js_1.smoothstep,
+    smootherstep: main_js_1.smootherstep,
     quadIn: main_js_1.quadIn,
     quadOut: main_js_1.quadOut,
     quadInOut: main_js_1.quadInOut,

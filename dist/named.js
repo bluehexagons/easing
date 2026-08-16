@@ -1,10 +1,12 @@
-import { backIn, backInOut, backOut, bounceIn, bounceInOut, bounceOut, circIn, circInOut, circOut, cubicIn, cubicInOut, cubicOut, elasticIn, elasticInOut, elasticOut, expoIn, expoInOut, expoOut, linear, quadIn, quadInOut, quadOut, quartIn, quartInOut, quartOut, quintIn, quintInOut, quintOut, sineIn, sineInOut, sineOut } from './main.js';
+import { backIn, backInOut, backOut, bounceIn, bounceInOut, bounceOut, circIn, circInOut, circOut, cubicIn, cubicInOut, cubicOut, elasticIn, elasticInOut, elasticOut, expoIn, expoInOut, expoOut, linear, quadIn, quadInOut, quadOut, quartIn, quartInOut, quartOut, quintIn, quintInOut, quintOut, sineIn, sineInOut, sineOut, smoothstep, smootherstep } from './main.js';
 /** Named, parameter-free easing curves for configuration-driven animation. */
 export const easings = Object.freeze({
     linear,
     sineIn,
     sineOut,
     sineInOut,
+    smoothstep,
+    smootherstep,
     quadIn,
     quadOut,
     quadInOut,

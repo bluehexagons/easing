@@ -49,6 +49,8 @@ const easingFunctions = [
   'sineIn',
   'sineOut',
   'sineInOut',
+  'smoothstep',
+  'smootherstep',
 ];
 
 // Verify that both package formats expose the same public runtime API.
@@ -120,6 +122,79 @@ assertSame(esm.backInOut(1), 1, 'backInOut endpoint');
 assertSame(esm.inOut(0, esm.linear, esm.linear), 0, 'inOut at start');
 assertSame(esm.inOut(0.5, esm.linear, esm.linear), 0.5, 'inOut midpoint');
 assertSame(esm.inOut(1, esm.linear, esm.linear), 1, 'inOut at end');
+
+assertSame(esm.smoothstep(0.5), 0.5, 'smoothstep midpoint');
+assertClose(esm.smoothstep(0.25), 0.15625, 'smoothstep quarter');
+assertSame(esm.smootherstep(0.5), 0.5, 'smootherstep midpoint');
+assertClose(esm.smootherstep(0.25), 0.103515625, 'smootherstep quarter');
+assertClose(esm.hermite()(0.25), esm.smoothstep(0.25), 'default Hermite matches smoothstep');
+assertClose(
+  esm.hermite({ startSlope: 1, endSlope: 2 })(0.5),
+  0.375,
+  'configured Hermite',
+);
+assert.throws(() => esm.hermite({ startSlope: Number.NaN }), RangeError);
+
+const curvePoints = [
+  [0, 0],
+  [0.25, 0.1],
+  [0.6, 0.9],
+  [1, 1],
+];
+const piecewise = esm.piecewiseLinear(curvePoints);
+const objectPiecewise = esm.piecewiseLinear([
+  { at: 0, value: 0 },
+  { at: 0.5, value: 0.25 },
+  { at: 1, value: 1 },
+]);
+assertSame(piecewise(0), 0, 'piecewise linear start');
+assertSame(piecewise(0.25), 0.1, 'piecewise linear stop');
+assertClose(piecewise(0.3), 0.21428571428571427, 'piecewise linear segment');
+assertSame(piecewise(1), 1, 'piecewise linear end');
+assertClose(piecewise(-0.1), -0.04, 'piecewise linear extrapolation before start');
+assertSame(objectPiecewise(0.5), 0.25, 'piecewise linear object stop');
+assert.throws(() => esm.piecewiseLinear([]), RangeError);
+assert.throws(() => esm.piecewiseLinear([[0, 0], [0.5, 0.5], [0.5, 1]]), RangeError);
+assert.throws(() => esm.piecewiseLinear([[0.1, 0], [1, 1]]), RangeError);
+
+const spline = esm.monotoneSpline(curvePoints);
+assertSame(spline(0), 0, 'monotone spline start');
+assertSame(spline(0.25), 0.1, 'monotone spline stop');
+assertSame(spline(0.6), 0.9, 'monotone spline second stop');
+assertSame(spline(1), 1, 'monotone spline end');
+let previousSplineValue = spline(0);
+for (let sample = 1; sample <= 100; sample += 1) {
+  const value = spline(sample / 100);
+  assert.ok(value >= previousSplineValue - 1e-12, `monotone spline should be monotonic at ${sample}`);
+  assert.ok(value >= -1e-12 && value <= 1 + 1e-12, `monotone spline should stay within stops at ${sample}`);
+  previousSplineValue = value;
+}
+assert.throws(() => esm.monotoneSpline([[0, 0], [0.5, 1], [1, 0.5]]), RangeError);
+
+const inverseQuad = esm.invert(esm.quadIn, { tolerance: 1e-12, iterations: 60 });
+assertClose(inverseQuad(0.25), 0.5, 'inverse quad');
+assertSame(inverseQuad(0), 0, 'inverse at start');
+assertSame(inverseQuad(1), 1, 'inverse at end');
+assertClose(esm.invert(spline, { tolerance: 1e-12, iterations: 60 })(spline(0.37)), 0.37, 'inverse spline');
+assert.throws(() => esm.invert(esm.bounceOut), RangeError);
+assert.throws(() => esm.invert(esm.steps(4)), RangeError);
+assert.throws(() => inverseQuad(-0.1), RangeError);
+assert.throws(() => esm.invert(esm.linear, { tolerance: 0 }), RangeError);
+assert.throws(() => esm.invert(esm.linear, { iterations: 0 }), RangeError);
+
+assertSame(esm.compose(esm.quadIn, esm.quadIn)(0.5), 0.0625, 'compose');
+assertSame(esm.mix(esm.linear, esm.quadIn, 0.5)(0.5), 0.375, 'mix');
+assertSame(esm.repeat(esm.linear, 2)(0.25), 0.5, 'repeat within cycle');
+assertSame(esm.repeat(esm.linear, 2)(0.5), 0, 'repeat at cycle boundary');
+assertSame(esm.repeat(esm.linear, 2)(1), 1, 'repeat end');
+assertSame(esm.alternate(esm.linear, 2)(0.25), 0.5, 'alternate first cycle');
+assertSame(esm.alternate(esm.linear, 2)(0.5), 1, 'alternate second cycle start');
+assertSame(esm.alternate(esm.linear, 2)(0.75), 0.5, 'alternate second cycle');
+assertSame(esm.alternate(esm.linear, 2)(1), 1, 'alternate end');
+assertSame(esm.alternate(esm.linear, 3)(1), 0, 'alternate odd end');
+assert.throws(() => esm.mix(esm.linear, esm.linear, Number.NaN), RangeError);
+assert.throws(() => esm.repeat(esm.linear, 0), RangeError);
+assert.throws(() => esm.alternate(esm.linear, 1.5), RangeError);
 
 const configuredElastic = esm.createElasticInOut({ amplitude: 1.5, period: 0.3 });
 assertSame(configuredElastic(0.5), 0.5, 'configured elastic midpoint');

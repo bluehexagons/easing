@@ -6,7 +6,54 @@
   Original code MIT License + 3-clause BSD http://robertpenner.com/easing_terms_of_use.html
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.spring = exports.steps = exports.cubicBezier = exports.clamp = exports.reverse = exports.combineInOut = exports.createElasticInOut = exports.createElasticOut = exports.createElasticIn = exports.lerp = exports.ease = exports.inOut = exports.sineInOut = exports.sineOut = exports.sineIn = exports.quintInOut = exports.quintOut = exports.quintIn = exports.quartInOut = exports.quartOut = exports.quartIn = exports.quadInOut = exports.quadOut = exports.quadIn = exports.linear = exports.expoInOut = exports.expoOut = exports.expoIn = exports.elasticInOut = exports.elasticIn = exports.elasticOut = exports.cubicInOut = exports.cubicOut = exports.cubicIn = exports.circInOut = exports.circOut = exports.circIn = exports.bounceInOut = exports.bounceIn = exports.bounceOut = exports.backInOut = exports.backOut = exports.backIn = void 0;
+exports.alternate = exports.repeat = exports.mix = exports.compose = exports.clamp = exports.reverse = exports.combineInOut = exports.createElasticInOut = exports.createElasticOut = exports.createElasticIn = exports.invert = exports.monotoneSpline = exports.piecewiseLinear = exports.lerp = exports.ease = exports.inOut = exports.sineInOut = exports.sineOut = exports.sineIn = exports.quintInOut = exports.quintOut = exports.quintIn = exports.quartInOut = exports.quartOut = exports.quartIn = exports.quadInOut = exports.quadOut = exports.quadIn = exports.hermite = exports.smootherstep = exports.smoothstep = exports.linear = exports.expoInOut = exports.expoOut = exports.expoIn = exports.elasticInOut = exports.elasticIn = exports.elasticOut = exports.cubicInOut = exports.cubicOut = exports.cubicIn = exports.circInOut = exports.circOut = exports.circIn = exports.bounceInOut = exports.bounceIn = exports.bounceOut = exports.backInOut = exports.backOut = exports.backIn = void 0;
+exports.spring = exports.steps = exports.cubicBezier = void 0;
+const validateCurvePoints = (points, name) => {
+    if (!Array.isArray(points) || points.length < 2) {
+        throw new RangeError(`${name} requires at least two points`);
+    }
+    const times = [];
+    const values = [];
+    for (const point of points) {
+        const time = Array.isArray(point) ? point[0] : point?.at;
+        const value = Array.isArray(point) ? point[1] : point?.value;
+        if ((Array.isArray(point) && point.length !== 2) ||
+            !Number.isFinite(time) || !Number.isFinite(value)) {
+            throw new RangeError(`${name} points must contain two finite numbers`);
+        }
+        times.push(time);
+        values.push(value);
+    }
+    if (times[0] !== 0 || times[times.length - 1] !== 1) {
+        throw new RangeError(`${name} point times must start at 0 and end at 1`);
+    }
+    for (let index = 1; index < times.length; index += 1) {
+        if (times[index] <= times[index - 1]) {
+            throw new RangeError(`${name} point times must be strictly increasing`);
+        }
+    }
+    return { times, values };
+};
+const findCurveSegment = (time, times) => {
+    if (time <= times[0]) {
+        return 0;
+    }
+    if (time >= times[times.length - 1]) {
+        return times.length - 2;
+    }
+    let lower = 0;
+    let upper = times.length - 1;
+    while (upper - lower > 1) {
+        const middle = Math.floor((lower + upper) * 0.5);
+        if (times[middle] <= time) {
+            lower = middle;
+        }
+        else {
+            upper = middle;
+        }
+    }
+    return lower;
+};
 const elasticParameters = (amplitude, period) => {
     if (!Number.isFinite(amplitude) || amplitude < 1) {
         throw new RangeError('Elastic amplitude must be a finite number greater than or equal to 1');
@@ -175,6 +222,27 @@ const linear = (time) => {
     return time;
 };
 exports.linear = linear;
+/** Smooth interpolation with zero velocity at both endpoints. */
+const smoothstep = (time) => time * time * (3 - 2 * time);
+exports.smoothstep = smoothstep;
+/** Smooth interpolation with zero velocity and acceleration at both endpoints. */
+const smootherstep = (time) => time * time * time * (time * (time * 6 - 15) + 10);
+exports.smootherstep = smootherstep;
+/** Create a cubic Hermite curve from 0 to 1 with configurable endpoint slopes. */
+const hermite = (options = {}) => {
+    const { startSlope = 0, endSlope = 0 } = options;
+    if (!Number.isFinite(startSlope) || !Number.isFinite(endSlope)) {
+        throw new RangeError('Hermite slopes must be finite numbers');
+    }
+    return (time) => {
+        const squared = time * time;
+        const cubed = squared * time;
+        return (cubed - 2 * squared + time) * startSlope +
+            (-2 * cubed + 3 * squared) +
+            (cubed - squared) * endSlope;
+    };
+};
+exports.hermite = hermite;
 const quadIn = (time) => {
     return time * time;
 };
@@ -269,6 +337,160 @@ exports.ease = ease;
  */
 const lerp = (time, from, to) => from + (0, exports.linear)(time) * (to - from);
 exports.lerp = lerp;
+/** Create a piecewise-linear curve from normalized time/value points. */
+const piecewiseLinear = (points) => {
+    const { times, values } = validateCurvePoints(points, 'piecewiseLinear');
+    return (time) => {
+        if (time === times[0]) {
+            return values[0];
+        }
+        if (time === times[times.length - 1]) {
+            return values[values.length - 1];
+        }
+        const index = findCurveSegment(time, times);
+        const span = times[index + 1] - times[index];
+        const progress = (time - times[index]) / span;
+        return values[index] + progress * (values[index + 1] - values[index]);
+    };
+};
+exports.piecewiseLinear = piecewiseLinear;
+const endpointTangent = (firstInterval, secondInterval, firstSecant, secondSecant) => {
+    let tangent = ((2 * firstInterval + secondInterval) * firstSecant -
+        firstInterval * secondSecant) / (firstInterval + secondInterval);
+    if (tangent * firstSecant <= 0) {
+        return 0;
+    }
+    if (firstSecant * secondSecant < 0 && Math.abs(tangent) > Math.abs(3 * firstSecant)) {
+        tangent = 3 * firstSecant;
+    }
+    return tangent;
+};
+/**
+ * Create a shape-preserving cubic spline from normalized points.
+ * Values must be non-decreasing so the resulting curve cannot overshoot them.
+ */
+const monotoneSpline = (points) => {
+    const { times, values } = validateCurvePoints(points, 'monotoneSpline');
+    for (let index = 1; index < values.length; index += 1) {
+        if (values[index] < values[index - 1]) {
+            throw new RangeError('monotoneSpline point values must be non-decreasing');
+        }
+    }
+    const intervals = [];
+    const secants = [];
+    for (let index = 0; index < times.length - 1; index += 1) {
+        const interval = times[index + 1] - times[index];
+        intervals.push(interval);
+        secants.push((values[index + 1] - values[index]) / interval);
+    }
+    const tangents = new Array(times.length);
+    if (secants.length === 1) {
+        tangents[0] = secants[0];
+        tangents[1] = secants[0];
+    }
+    else {
+        tangents[0] = endpointTangent(intervals[0], intervals[1], secants[0], secants[1]);
+        tangents[tangents.length - 1] = endpointTangent(intervals[intervals.length - 1], intervals[intervals.length - 2], secants[secants.length - 1], secants[secants.length - 2]);
+        for (let index = 1; index < tangents.length - 1; index += 1) {
+            const previousSecant = secants[index - 1];
+            const nextSecant = secants[index];
+            if (previousSecant * nextSecant <= 0) {
+                tangents[index] = 0;
+            }
+            else {
+                const previousInterval = intervals[index - 1];
+                const nextInterval = intervals[index];
+                const firstWeight = 2 * nextInterval + previousInterval;
+                const secondWeight = nextInterval + 2 * previousInterval;
+                tangents[index] = (firstWeight + secondWeight) /
+                    (firstWeight / previousSecant + secondWeight / nextSecant);
+            }
+        }
+    }
+    return (time) => {
+        if (time === times[0]) {
+            return values[0];
+        }
+        if (time === times[times.length - 1]) {
+            return values[values.length - 1];
+        }
+        const index = findCurveSegment(time, times);
+        const interval = intervals[index];
+        const progress = (time - times[index]) / interval;
+        const progressSquared = progress * progress;
+        const progressCubed = progressSquared * progress;
+        const startBasis = 2 * progressCubed - 3 * progressSquared + 1;
+        const startTangentBasis = progressCubed - 2 * progressSquared + progress;
+        const endBasis = -2 * progressCubed + 3 * progressSquared;
+        const endTangentBasis = progressCubed - progressSquared;
+        return startBasis * values[index] +
+            startTangentBasis * interval * tangents[index] +
+            endBasis * values[index + 1] +
+            endTangentBasis * interval * tangents[index + 1];
+    };
+};
+exports.monotoneSpline = monotoneSpline;
+/**
+ * Create an inverse lookup for a continuous, strictly monotonic curve.
+ * The returned function accepts a curve value and returns its normalized time.
+ */
+const invert = (fn, options = {}) => {
+    const { tolerance = 1e-8, iterations = 50 } = options;
+    if (!Number.isFinite(tolerance) || tolerance <= 0) {
+        throw new RangeError('Invert tolerance must be a finite number greater than 0');
+    }
+    if (!Number.isSafeInteger(iterations) || iterations < 1) {
+        throw new RangeError('Invert iterations must be a positive safe integer');
+    }
+    const startValue = fn(0);
+    const endValue = fn(1);
+    if (!Number.isFinite(startValue) || !Number.isFinite(endValue) || startValue === endValue) {
+        throw new RangeError('Cannot invert a curve with equal or non-finite endpoint values');
+    }
+    const ascending = endValue > startValue;
+    let previousValue = startValue;
+    for (let sample = 1; sample <= 32; sample += 1) {
+        const currentValue = fn(sample / 32);
+        if (!Number.isFinite(currentValue) ||
+            (ascending ? currentValue <= previousValue : currentValue >= previousValue)) {
+            throw new RangeError('Cannot invert a curve that is not strictly monotonic');
+        }
+        previousValue = currentValue;
+    }
+    const minimum = Math.min(startValue, endValue);
+    const maximum = Math.max(startValue, endValue);
+    return (value) => {
+        if (!Number.isFinite(value) || value < minimum || value > maximum) {
+            throw new RangeError('Inverted value must be finite and within the curve endpoint range');
+        }
+        if (value === startValue) {
+            return 0;
+        }
+        if (value === endValue) {
+            return 1;
+        }
+        let lower = 0;
+        let upper = 1;
+        for (let iteration = 0; iteration < iterations; iteration += 1) {
+            const middle = (lower + upper) * 0.5;
+            const currentValue = fn(middle);
+            if (!Number.isFinite(currentValue)) {
+                throw new RangeError('Cannot invert a curve that produces non-finite values');
+            }
+            if (Math.abs(currentValue - value) <= tolerance || upper - lower <= tolerance) {
+                return middle;
+            }
+            if (ascending ? currentValue < value : currentValue > value) {
+                lower = middle;
+            }
+            else {
+                upper = middle;
+            }
+        }
+        return (lower + upper) * 0.5;
+    };
+};
+exports.invert = invert;
 /** Create an elastic-in curve with reusable parameters. */
 const createElasticIn = (options = {}) => {
     const { amplitude = 1, period = 0.3 } = options;
@@ -307,6 +529,49 @@ const clamp = (fn, minimum = 0, maximum = 1) => {
     return (time) => Math.min(maximum, Math.max(minimum, fn(time)));
 };
 exports.clamp = clamp;
+/** Compose two curves, applying the inner curve before the outer curve. */
+const compose = (outer, inner) => (time) => outer(inner(time));
+exports.compose = compose;
+/** Blend two curves, where weight 0 selects the first and weight 1 the second. */
+const mix = (first, second, weight = 0.5) => {
+    if (!Number.isFinite(weight)) {
+        throw new RangeError('Mix weight must be a finite number');
+    }
+    return (time) => first(time) * (1 - weight) + second(time) * weight;
+};
+exports.mix = mix;
+const validateCycleCount = (count, name) => {
+    if (!Number.isSafeInteger(count) || count < 1) {
+        throw new RangeError(`${name} count must be a positive safe integer`);
+    }
+};
+/** Repeat a curve for a fixed number of cycles. */
+const repeat = (fn, count) => {
+    validateCycleCount(count, 'Repeat');
+    return (time) => {
+        if (time === 1) {
+            return fn(1);
+        }
+        const scaledTime = time * count;
+        const cycleProgress = scaledTime - Math.floor(scaledTime);
+        return fn(cycleProgress);
+    };
+};
+exports.repeat = repeat;
+/** Repeat a curve while reversing its direction on alternating cycles. */
+const alternate = (fn, count) => {
+    validateCycleCount(count, 'Alternate');
+    return (time) => {
+        const scaledTime = time * count;
+        const cycle = Math.floor(scaledTime);
+        const cycleProgress = scaledTime - cycle;
+        if (time === 1) {
+            return fn(count % 2 === 0 ? 1 : 0);
+        }
+        return cycle % 2 === 0 ? fn(cycleProgress) : fn(1 - cycleProgress);
+    };
+};
+exports.alternate = alternate;
 /** Create an easing function equivalent to CSS cubic-bezier(). */
 const cubicBezier = (x1, y1, x2, y2) => {
     if (![x1, y1, x2, y2].every(Number.isFinite)) {

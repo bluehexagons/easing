@@ -44,16 +44,26 @@ The built-in families are `sine`, `quad`, `cubic`, `quart`, `quint`, `expo`, `ci
 | --- | --- |
 | `ease(fn, time, from, to)` | Ease between two numeric values. |
 | `lerp(time, from, to)` | Linearly interpolate between two values. |
+| `smoothstep(time)` / `smootherstep(time)` | Smooth polynomial curves with zero endpoint velocity, or zero endpoint velocity and acceleration. |
+| `hermite(options?)` | Create a cubic curve with configurable endpoint slopes. |
 | `inOut(time, first, second)` | Apply a different curve to each half. |
 | `combineInOut(first, second)` | Create the reusable form of `inOut`. |
 | `reverse(fn)` | Reverse a curve in time and value. |
 | `clamp(fn, min?, max?)` | Clamp a curve's output; defaults to `[0, 1]`. |
+| `compose(outer, inner)` | Apply one curve after another. |
+| `mix(first, second, weight?)` | Blend two curves by output value. |
+| `repeat(fn, count)` / `alternate(fn, count)` | Repeat a curve, optionally reversing every other cycle. |
+| `piecewiseLinear(points)` | Create a curve by linearly interpolating normalized stops. |
+| `monotoneSpline(points)` | Create a smooth, shape-preserving curve from normalized stops. |
+| `invert(fn, options?)` | Create an inverse lookup for a continuous, strictly monotonic curve. |
 | `createElasticIn/Out/InOut(options?)` | Configure an elastic curve once. Amplitude must be at least `1`; period must be positive. |
 | `cubicBezier(x1, y1, x2, y2)` | Create a CSS-compatible cubic Bézier curve. The x controls must be in `[0, 1]`. |
 | `steps(count, position?)` | Create a stepped curve using `start` or `end` positioning. |
 | `spring(options?)` | Create a normalized damped spring with mass, stiffness, damping, velocity, and duration-in-seconds controls. |
 
 Every reusable curve has the type `(time: number) => number`, exported as `EasingFunction`.
+
+Piecewise constructors accept points in either `[[time, value], ...]` or `[{ at, value }, ...]` form; times must start at `0`, end at `1`, and be strictly increasing. `monotoneSpline` additionally requires non-decreasing values. `invert` uses bisection and throws when its input is outside the curve's endpoint value range.
 
 For configuration-driven animation, import the parameter-free registry separately:
 

@@ -1,4 +1,11 @@
 export type EasingFunction = (time: number) => number;
+/** A normalized stop object used by piecewise curve constructors. */
+export interface CurveStop {
+    at: number;
+    value: number;
+}
+/** A normalized time/value pair or stop object used by piecewise curves. */
+export type CurvePoint = readonly [time: number, value: number] | CurveStop;
 export interface ElasticOptions {
     amplitude?: number;
     period?: number;
@@ -11,6 +18,18 @@ export interface SpringOptions {
     duration?: number;
 }
 export type StepPosition = 'start' | 'end';
+export interface InvertOptions {
+    /** Maximum acceptable error in time or curve value. */
+    tolerance?: number;
+    /** Maximum number of bisection iterations. */
+    iterations?: number;
+}
+export interface HermiteOptions {
+    /** Derivative at time 0, measured in normalized value per normalized time. */
+    startSlope?: number;
+    /** Derivative at time 1, measured in normalized value per normalized time. */
+    endSlope?: number;
+}
 export declare const backIn: (time: number, overshoot?: number) => number;
 export declare const backOut: (time: number, overshoot?: number) => number;
 export declare const backInOut: (time: number, overshoot?: number) => number;
@@ -30,6 +49,12 @@ export declare const expoIn: (time: number) => number;
 export declare const expoOut: (time: number) => number;
 export declare const expoInOut: (time: number) => number;
 export declare const linear: (time: number) => number;
+/** Smooth interpolation with zero velocity at both endpoints. */
+export declare const smoothstep: (time: number) => number;
+/** Smooth interpolation with zero velocity and acceleration at both endpoints. */
+export declare const smootherstep: (time: number) => number;
+/** Create a cubic Hermite curve from 0 to 1 with configurable endpoint slopes. */
+export declare const hermite: (options?: HermiteOptions) => EasingFunction;
 export declare const quadIn: (time: number) => number;
 export declare const quadOut: (time: number) => number;
 export declare const quadInOut: (time: number) => number;
@@ -54,6 +79,18 @@ export declare const ease: (fn: EasingFunction, time: number, from: number, to: 
  * Convenience function to linearly interpolate between two values at a given time.
  */
 export declare const lerp: (time: number, from: number, to: number) => number;
+/** Create a piecewise-linear curve from normalized time/value points. */
+export declare const piecewiseLinear: (points: readonly CurvePoint[]) => EasingFunction;
+/**
+ * Create a shape-preserving cubic spline from normalized points.
+ * Values must be non-decreasing so the resulting curve cannot overshoot them.
+ */
+export declare const monotoneSpline: (points: readonly CurvePoint[]) => EasingFunction;
+/**
+ * Create an inverse lookup for a continuous, strictly monotonic curve.
+ * The returned function accepts a curve value and returns its normalized time.
+ */
+export declare const invert: (fn: EasingFunction, options?: InvertOptions) => EasingFunction;
 /** Create an elastic-in curve with reusable parameters. */
 export declare const createElasticIn: (options?: ElasticOptions) => EasingFunction;
 /** Create an elastic-out curve with reusable parameters. */
@@ -66,6 +103,14 @@ export declare const combineInOut: (start: EasingFunction, end: EasingFunction) 
 export declare const reverse: (fn: EasingFunction) => EasingFunction;
 /** Clamp an easing function's output to a range. */
 export declare const clamp: (fn: EasingFunction, minimum?: number, maximum?: number) => EasingFunction;
+/** Compose two curves, applying the inner curve before the outer curve. */
+export declare const compose: (outer: EasingFunction, inner: EasingFunction) => EasingFunction;
+/** Blend two curves, where weight 0 selects the first and weight 1 the second. */
+export declare const mix: (first: EasingFunction, second: EasingFunction, weight?: number) => EasingFunction;
+/** Repeat a curve for a fixed number of cycles. */
+export declare const repeat: (fn: EasingFunction, count: number) => EasingFunction;
+/** Repeat a curve while reversing its direction on alternating cycles. */
+export declare const alternate: (fn: EasingFunction, count: number) => EasingFunction;
 /** Create an easing function equivalent to CSS cubic-bezier(). */
 export declare const cubicBezier: (x1: number, y1: number, x2: number, y2: number) => EasingFunction;
 /** Create a stepped easing curve. */

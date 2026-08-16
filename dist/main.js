@@ -299,6 +299,11 @@ export const lerp = (time, from, to) => from + linear(time) * (to - from);
 /** Create a piecewise-linear curve from normalized time/value points. */
 export const piecewiseLinear = (points) => {
     const { times, values } = validateCurvePoints(points, 'piecewiseLinear');
+    for (let index = 1; index < values.length; index += 1) {
+        if (!Number.isFinite(values[index] - values[index - 1])) {
+            throw new RangeError('piecewiseLinear points produce non-finite differences');
+        }
+    }
     return (time) => {
         if (time === times[0]) {
             return values[0];
@@ -338,8 +343,12 @@ export const monotoneSpline = (points) => {
     const secants = [];
     for (let index = 0; index < times.length - 1; index += 1) {
         const interval = times[index + 1] - times[index];
+        const secant = (values[index + 1] - values[index]) / interval;
+        if (!Number.isFinite(secant)) {
+            throw new RangeError('monotoneSpline points produce non-finite slopes');
+        }
         intervals.push(interval);
-        secants.push((values[index + 1] - values[index]) / interval);
+        secants.push(secant);
     }
     const tangents = new Array(times.length);
     if (secants.length === 1) {
@@ -364,6 +373,9 @@ export const monotoneSpline = (points) => {
                     (firstWeight / previousSecant + secondWeight / nextSecant);
             }
         }
+    }
+    if (!tangents.every(Number.isFinite)) {
+        throw new RangeError('monotoneSpline points produce non-finite tangents');
     }
     return (time) => {
         if (time === times[0]) {
@@ -513,7 +525,7 @@ export const alternate = (fn, count) => {
         const cycle = Math.floor(scaledTime);
         const cycleProgress = scaledTime - cycle;
         if (time === 1) {
-            return fn(count % 2 === 0 ? 1 : 0);
+            return fn(count % 2 === 1 ? 1 : 0);
         }
         return cycle % 2 === 0 ? fn(cycleProgress) : fn(1 - cycleProgress);
     };

@@ -65,6 +65,8 @@ Every reusable curve has the type `(time: number) => number`, exported as `Easin
 
 Piecewise constructors accept points in either `[[time, value], ...]` or `[{ at, value }, ...]` form; times must start at `0`, end at `1`, and be strictly increasing. `monotoneSpline` additionally requires non-decreasing values. `invert` uses bisection and throws when its input is outside the curve's endpoint value range.
 
+`repeat` wraps at each cycle boundary and preserves the wrapped curve's final endpoint at time `1`; `alternate` reverses the curve on every other cycle, so its final value depends on whether the final cycle is forward or reversed.
+
 For configuration-driven animation, import the parameter-free registry separately:
 
 ```ts

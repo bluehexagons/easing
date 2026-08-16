@@ -1,8 +1,8 @@
 export type EasingFunction = (time: number) => number;
 /** A normalized stop object used by piecewise curve constructors. */
 export interface CurveStop {
-    at: number;
-    value: number;
+    readonly at: number;
+    readonly value: number;
 }
 /** A normalized time/value pair or stop object used by piecewise curves. */
 export type CurvePoint = readonly [time: number, value: number] | CurveStop;

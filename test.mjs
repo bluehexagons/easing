@@ -156,6 +156,7 @@ assertSame(objectPiecewise(0.5), 0.25, 'piecewise linear object stop');
 assert.throws(() => esm.piecewiseLinear([]), RangeError);
 assert.throws(() => esm.piecewiseLinear([[0, 0], [0.5, 0.5], [0.5, 1]]), RangeError);
 assert.throws(() => esm.piecewiseLinear([[0.1, 0], [1, 1]]), RangeError);
+assert.throws(() => esm.piecewiseLinear([[0, -Number.MAX_VALUE], [1, Number.MAX_VALUE]]), RangeError);
 
 const spline = esm.monotoneSpline(curvePoints);
 assertSame(spline(0), 0, 'monotone spline start');
@@ -190,11 +191,27 @@ assertSame(esm.repeat(esm.linear, 2)(1), 1, 'repeat end');
 assertSame(esm.alternate(esm.linear, 2)(0.25), 0.5, 'alternate first cycle');
 assertSame(esm.alternate(esm.linear, 2)(0.5), 1, 'alternate second cycle start');
 assertSame(esm.alternate(esm.linear, 2)(0.75), 0.5, 'alternate second cycle');
-assertSame(esm.alternate(esm.linear, 2)(1), 1, 'alternate end');
-assertSame(esm.alternate(esm.linear, 3)(1), 0, 'alternate odd end');
+assertSame(esm.alternate(esm.linear, 1)(1), 1, 'alternate single-cycle end');
+assertSame(esm.alternate(esm.linear, 2)(1), 0, 'alternate even-cycle end');
+assertSame(esm.alternate(esm.linear, 3)(1), 1, 'alternate odd-cycle end');
 assert.throws(() => esm.mix(esm.linear, esm.linear, Number.NaN), RangeError);
 assert.throws(() => esm.repeat(esm.linear, 0), RangeError);
 assert.throws(() => esm.alternate(esm.linear, 1.5), RangeError);
+assert.throws(
+  () => esm.monotoneSpline([[0, -Number.MAX_VALUE], [Number.EPSILON, Number.MAX_VALUE], [1, Number.MAX_VALUE]]),
+  RangeError,
+);
+
+assertSame(
+  cjs.alternate(cjs.linear, 2)(1),
+  esm.alternate(esm.linear, 2)(1),
+  'CommonJS alternate',
+);
+assertSame(
+  cjs.piecewiseLinear([{ at: 0, value: 0 }, { at: 1, value: 1 }])(0.25),
+  0.25,
+  'CommonJS piecewise linear',
+);
 
 const configuredElastic = esm.createElasticInOut({ amplitude: 1.5, period: 0.3 });
 assertSame(configuredElastic(0.5), 0.5, 'configured elastic midpoint');

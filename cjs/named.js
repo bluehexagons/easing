@@ -36,5 +36,5 @@ exports.easings = Object.freeze({
     bounceInOut: main_js_1.bounceInOut,
     elasticIn: main_js_1.elasticIn,
     elasticOut: main_js_1.elasticOut,
-    elasticInOut: main_js_1.elasticInOut
+    elasticInOut: main_js_1.elasticInOut,
 });

@@ -14,7 +14,8 @@ const validateCurvePoints = (points, name) => {
         const time = Array.isArray(point) ? point[0] : point?.at;
         const value = Array.isArray(point) ? point[1] : point?.value;
         if ((Array.isArray(point) && point.length !== 2) ||
-            !Number.isFinite(time) || !Number.isFinite(value)) {
+            !Number.isFinite(time) ||
+            !Number.isFinite(value)) {
             throw new RangeError(`${name} points must contain two finite numbers`);
         }
         times.push(time);
@@ -67,15 +68,14 @@ const elasticOutValue = (time, amplitude, parameters) => {
     if (time === 0 || time === 1) {
         return time;
     }
-    return amplitude * 2 ** (-10 * time) *
-        Math.sin(time * parameters.frequency - parameters.phase) + 1;
+    return (amplitude * 2 ** (-10 * time) * Math.sin(time * parameters.frequency - parameters.phase) + 1);
 };
 const elasticInValue = (time, amplitude, parameters) => {
     if (time === 0 || time === 1) {
         return time;
     }
-    return -(amplitude * 2 ** (10 * (time - 1))) *
-        Math.sin((1 - time) * parameters.frequency - parameters.phase);
+    return (-(amplitude * 2 ** (10 * (time - 1))) *
+        Math.sin((1 - time) * parameters.frequency - parameters.phase));
 };
 const elasticInOutValue = (time, amplitude, parameters) => {
     if (time < 0.5) {
@@ -212,9 +212,9 @@ export const hermite = (options = {}) => {
     return (time) => {
         const squared = time * time;
         const cubed = squared * time;
-        return (cubed - 2 * squared + time) * startSlope +
+        return ((cubed - 2 * squared + time) * startSlope +
             (-2 * cubed + 3 * squared) +
-            (cubed - squared) * endSlope;
+            (cubed - squared) * endSlope);
     };
 };
 export const quadIn = (time) => {
@@ -318,8 +318,8 @@ export const piecewiseLinear = (points) => {
     };
 };
 const endpointTangent = (firstInterval, secondInterval, firstSecant, secondSecant) => {
-    let tangent = ((2 * firstInterval + secondInterval) * firstSecant -
-        firstInterval * secondSecant) / (firstInterval + secondInterval);
+    let tangent = ((2 * firstInterval + secondInterval) * firstSecant - firstInterval * secondSecant) /
+        (firstInterval + secondInterval);
     if (tangent * firstSecant <= 0) {
         return 0;
     }
@@ -350,7 +350,7 @@ export const monotoneSpline = (points) => {
         intervals.push(interval);
         secants.push(secant);
     }
-    const tangents = new Array(times.length);
+    const tangents = Array.from({ length: times.length }, () => 0);
     if (secants.length === 1) {
         tangents[0] = secants[0];
         tangents[1] = secants[0];
@@ -369,8 +369,8 @@ export const monotoneSpline = (points) => {
                 const nextInterval = intervals[index];
                 const firstWeight = 2 * nextInterval + previousInterval;
                 const secondWeight = nextInterval + 2 * previousInterval;
-                tangents[index] = (firstWeight + secondWeight) /
-                    (firstWeight / previousSecant + secondWeight / nextSecant);
+                tangents[index] =
+                    (firstWeight + secondWeight) / (firstWeight / previousSecant + secondWeight / nextSecant);
             }
         }
     }
@@ -393,10 +393,10 @@ export const monotoneSpline = (points) => {
         const startTangentBasis = progressCubed - 2 * progressSquared + progress;
         const endBasis = -2 * progressCubed + 3 * progressSquared;
         const endTangentBasis = progressCubed - progressSquared;
-        return startBasis * values[index] +
+        return (startBasis * values[index] +
             startTangentBasis * interval * tangents[index] +
             endBasis * values[index + 1] +
-            endTangentBasis * interval * tangents[index + 1];
+            endTangentBasis * interval * tangents[index + 1]);
     };
 };
 /**
@@ -545,7 +545,8 @@ export const cubicBezier = (x1, y1, x2, y2) => {
     const coefficientB = (first, second) => 3 * second - 6 * first;
     const coefficientC = (first) => 3 * first;
     const sample = (time, first, second) => ((coefficientA(first, second) * time + coefficientB(first, second)) * time +
-        coefficientC(first)) * time;
+        coefficientC(first)) *
+        time;
     const slope = (time, first, second) => 3 * coefficientA(first, second) * time * time +
         2 * coefficientB(first, second) * time +
         coefficientC(first);
@@ -622,7 +623,9 @@ export const spring = (options = {}) => {
     }
     const angularFrequency = Math.sqrt(stiffness / mass);
     const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
-    if (!Number.isFinite(angularFrequency) || angularFrequency <= 0 || !Number.isFinite(dampingRatio)) {
+    if (!Number.isFinite(angularFrequency) ||
+        angularFrequency <= 0 ||
+        !Number.isFinite(dampingRatio)) {
         throw new RangeError('Spring options must produce finite frequency and damping');
     }
     const criticalTolerance = 1e-8;
@@ -638,8 +641,7 @@ export const spring = (options = {}) => {
                 sineCoefficient * Math.sin(dampedFrequency * seconds));
     }
     else if (dampingRatio <= 1 + criticalTolerance) {
-        displacement = (seconds) => (-1 + (velocity - angularFrequency) * seconds) *
-            Math.exp(-angularFrequency * seconds);
+        displacement = (seconds) => (-1 + (velocity - angularFrequency) * seconds) * Math.exp(-angularFrequency * seconds);
     }
     else {
         const root = Math.sqrt(dampingRatio * dampingRatio - 1);

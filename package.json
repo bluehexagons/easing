@@ -1,31 +1,36 @@
 {
   "name": "@bluehexagons/easing",
-  "description": "A light library of easing functions",
   "version": "0.5.1",
+  "description": "A light library of easing functions",
+  "keywords": [
+    "easing",
+    "interpolation",
+    "lerp"
+  ],
+  "homepage": "https://github.com/bluehexagons/easing",
+  "bugs": {
+    "url": "https://github.com/bluehexagons/easing/issues"
+  },
   "license": "Apache-2.0",
   "author": "bluehexagons <this@bluehexagons.com>",
-  "homepage": "https://github.com/bluehexagons/easing",
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bluehexagons/easing.git"
-  },
-  "bugs": {
-    "url": "https://github.com/bluehexagons/easing/issues"
   },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/bluehexagons"
   },
-
+  "files": [
+    "dist",
+    "cjs",
+    "docs"
+  ],
   "type": "module",
   "sideEffects": false,
-  "engines": {
-    "node": ">=22.22.1"
-  },
-  "types": "./dist/main.d.ts",
   "main": "./cjs/main.js",
   "module": "./dist/main.js",
+  "types": "./dist/main.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -54,9 +59,13 @@
   "publishConfig": {
     "access": "public"
   },
-
   "scripts": {
     "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
+    "check": "npm run test && npm run lint && npm run format:check",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint . --deny-warnings",
+    "lint:fix": "oxlint . --fix --deny-warnings",
     "test": "node test.mjs && npm run test:types && npm run docs:check",
     "test:types": "tsc --project test/tsconfig.json",
     "prebuild": "node scripts/clean.mjs all",
@@ -69,18 +78,12 @@
     "pretest": "npm run build",
     "prepack": "npm run build"
   },
-
-  "keywords": [
-    "easing",
-    "interpolation",
-    "lerp"
-  ],
-  "files": [
-    "dist",
-    "cjs",
-    "docs"
-  ],
   "devDependencies": {
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.79.0",
     "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.22.1"
   }
 }

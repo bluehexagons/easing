@@ -2,7 +2,10 @@ import easing = require('@bluehexagons/easing');
 import named = require('@bluehexagons/easing/named');
 
 const curve: easing.EasingFunction = easing.createElasticInOut();
-const points = [[0, 0], [1, 1]] as const;
+const points = [
+  [0, 0],
+  [1, 1],
+] as const;
 const constructed: easing.EasingFunction[] = [
   easing.piecewiseLinear(points),
   easing.monotoneSpline(points),

@@ -32,7 +32,7 @@ import {
   sineOut,
   smoothstep,
   smootherstep,
-  type EasingFunction
+  type EasingFunction,
 } from './main.js';
 
 /** Named, parameter-free easing curves for configuration-driven animation. */
@@ -69,7 +69,7 @@ export const easings = Object.freeze({
   bounceInOut,
   elasticIn,
   elasticOut,
-  elasticInOut
+  elasticInOut,
 } satisfies Record<string, EasingFunction>);
 
 export type EasingName = keyof typeof easings;

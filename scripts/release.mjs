@@ -75,4 +75,13 @@ run('npm', ['pack', '--dry-run']);
 requireCleanTrackedWorktree();
 run('git', ['tag', '-a', tagName, '-m', `Easing ${tagName}`]);
 run('git', ['push', remote, `refs/tags/${tagName}`]);
-run('gh', ['release', 'create', tagName, '--verify-tag', '--title', tagName, '--notes', releaseNotes]);
+run('gh', [
+  'release',
+  'create',
+  tagName,
+  '--verify-tag',
+  '--title',
+  tagName,
+  '--notes',
+  releaseNotes,
+]);

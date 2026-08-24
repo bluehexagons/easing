@@ -16,7 +16,7 @@ import {
   steps,
   smoothstep,
   smootherstep,
-  type EasingFunction
+  type EasingFunction,
 } from '@bluehexagons/easing';
 import { easings, type EasingName } from '@bluehexagons/easing/named';
 
@@ -27,16 +27,25 @@ const curves: EasingFunction[] = [
   spring(),
   steps(4),
   hermite(),
-  piecewiseLinear([[0, 0], [1, 1]] as const),
-  piecewiseLinear([{ at: 0, value: 0 }, { at: 1, value: 1 }]),
-  monotoneSpline([[0, 0], [1, 1]] as const),
+  piecewiseLinear([
+    [0, 0],
+    [1, 1],
+  ] as const),
+  piecewiseLinear([
+    { at: 0, value: 0 },
+    { at: 1, value: 1 },
+  ]),
+  monotoneSpline([
+    [0, 0],
+    [1, 1],
+  ] as const),
   invert(quadIn),
   compose(quadIn, quadOut),
   mix(quadIn, quadOut),
   repeat(quadIn, 2),
   alternate(quadIn, 2),
   smoothstep,
-  smootherstep
+  smootherstep,
 ];
 const name: EasingName = 'quadInOut';
 

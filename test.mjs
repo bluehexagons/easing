@@ -71,12 +71,26 @@ for (const name of easingFunctions) {
   assertClose(easing(0), 0, `${name}(0)`);
   assertClose(easing(1), 1, `${name}(1)`);
   for (let sample = 0; sample <= 100; sample += 1) {
-    assert.ok(Number.isFinite(easing(sample / 100)), `${name} should be finite at sample ${sample}`);
+    assert.ok(
+      Number.isFinite(easing(sample / 100)),
+      `${name} should be finite at sample ${sample}`,
+    );
   }
 }
 
 // In/out curves should be symmetric, and out curves should reverse their in curve.
-for (const family of ['sine', 'quad', 'cubic', 'quart', 'quint', 'expo', 'circ', 'back', 'bounce', 'elastic']) {
+for (const family of [
+  'sine',
+  'quad',
+  'cubic',
+  'quart',
+  'quint',
+  'expo',
+  'circ',
+  'back',
+  'bounce',
+  'elastic',
+]) {
   for (const time of [0.1, 0.25, 0.4]) {
     assertClose(
       esm[`${family}InOut`](time),
@@ -114,7 +128,11 @@ const end = 100;
 
 assertSame(esm.lerp(time, start, end), 50, 'lerp');
 assertSame(esm.ease(esm.quadIn, time, start, end), 25, 'ease with quadIn');
-assertSame(esm.ease((value) => value ** 2, time, start, end), 25, 'ease with a custom function');
+assertSame(
+  esm.ease((value) => value ** 2, time, start, end),
+  25,
+  'ease with a custom function',
+);
 assertSame(esm.elasticInOut(time, 1.5, 0.3), 0.5, 'elasticInOut midpoint');
 assertSame(esm.backInOut(1), 1, 'backInOut endpoint');
 
@@ -128,11 +146,7 @@ assertClose(esm.smoothstep(0.25), 0.15625, 'smoothstep quarter');
 assertSame(esm.smootherstep(0.5), 0.5, 'smootherstep midpoint');
 assertClose(esm.smootherstep(0.25), 0.103515625, 'smootherstep quarter');
 assertClose(esm.hermite()(0.25), esm.smoothstep(0.25), 'default Hermite matches smoothstep');
-assertClose(
-  esm.hermite({ startSlope: 1, endSlope: 2 })(0.5),
-  0.375,
-  'configured Hermite',
-);
+assertClose(esm.hermite({ startSlope: 1, endSlope: 2 })(0.5), 0.375, 'configured Hermite');
 assert.throws(() => esm.hermite({ startSlope: Number.NaN }), RangeError);
 
 const curvePoints = [
@@ -154,9 +168,31 @@ assertSame(piecewise(1), 1, 'piecewise linear end');
 assertClose(piecewise(-0.1), -0.04, 'piecewise linear extrapolation before start');
 assertSame(objectPiecewise(0.5), 0.25, 'piecewise linear object stop');
 assert.throws(() => esm.piecewiseLinear([]), RangeError);
-assert.throws(() => esm.piecewiseLinear([[0, 0], [0.5, 0.5], [0.5, 1]]), RangeError);
-assert.throws(() => esm.piecewiseLinear([[0.1, 0], [1, 1]]), RangeError);
-assert.throws(() => esm.piecewiseLinear([[0, -Number.MAX_VALUE], [1, Number.MAX_VALUE]]), RangeError);
+assert.throws(
+  () =>
+    esm.piecewiseLinear([
+      [0, 0],
+      [0.5, 0.5],
+      [0.5, 1],
+    ]),
+  RangeError,
+);
+assert.throws(
+  () =>
+    esm.piecewiseLinear([
+      [0.1, 0],
+      [1, 1],
+    ]),
+  RangeError,
+);
+assert.throws(
+  () =>
+    esm.piecewiseLinear([
+      [0, -Number.MAX_VALUE],
+      [1, Number.MAX_VALUE],
+    ]),
+  RangeError,
+);
 
 const spline = esm.monotoneSpline(curvePoints);
 assertSame(spline(0), 0, 'monotone spline start');
@@ -166,17 +202,35 @@ assertSame(spline(1), 1, 'monotone spline end');
 let previousSplineValue = spline(0);
 for (let sample = 1; sample <= 100; sample += 1) {
   const value = spline(sample / 100);
-  assert.ok(value >= previousSplineValue - 1e-12, `monotone spline should be monotonic at ${sample}`);
-  assert.ok(value >= -1e-12 && value <= 1 + 1e-12, `monotone spline should stay within stops at ${sample}`);
+  assert.ok(
+    value >= previousSplineValue - 1e-12,
+    `monotone spline should be monotonic at ${sample}`,
+  );
+  assert.ok(
+    value >= -1e-12 && value <= 1 + 1e-12,
+    `monotone spline should stay within stops at ${sample}`,
+  );
   previousSplineValue = value;
 }
-assert.throws(() => esm.monotoneSpline([[0, 0], [0.5, 1], [1, 0.5]]), RangeError);
+assert.throws(
+  () =>
+    esm.monotoneSpline([
+      [0, 0],
+      [0.5, 1],
+      [1, 0.5],
+    ]),
+  RangeError,
+);
 
 const inverseQuad = esm.invert(esm.quadIn, { tolerance: 1e-12, iterations: 60 });
 assertClose(inverseQuad(0.25), 0.5, 'inverse quad');
 assertSame(inverseQuad(0), 0, 'inverse at start');
 assertSame(inverseQuad(1), 1, 'inverse at end');
-assertClose(esm.invert(spline, { tolerance: 1e-12, iterations: 60 })(spline(0.37)), 0.37, 'inverse spline');
+assertClose(
+  esm.invert(spline, { tolerance: 1e-12, iterations: 60 })(spline(0.37)),
+  0.37,
+  'inverse spline',
+);
 assert.throws(() => esm.invert(esm.bounceOut), RangeError);
 assert.throws(() => esm.invert(esm.steps(4)), RangeError);
 assert.throws(() => inverseQuad(-0.1), RangeError);
@@ -198,17 +252,21 @@ assert.throws(() => esm.mix(esm.linear, esm.linear, Number.NaN), RangeError);
 assert.throws(() => esm.repeat(esm.linear, 0), RangeError);
 assert.throws(() => esm.alternate(esm.linear, 1.5), RangeError);
 assert.throws(
-  () => esm.monotoneSpline([[0, -Number.MAX_VALUE], [Number.EPSILON, Number.MAX_VALUE], [1, Number.MAX_VALUE]]),
+  () =>
+    esm.monotoneSpline([
+      [0, -Number.MAX_VALUE],
+      [Number.EPSILON, Number.MAX_VALUE],
+      [1, Number.MAX_VALUE],
+    ]),
   RangeError,
 );
 
+assertSame(cjs.alternate(cjs.linear, 2)(1), esm.alternate(esm.linear, 2)(1), 'CommonJS alternate');
 assertSame(
-  cjs.alternate(cjs.linear, 2)(1),
-  esm.alternate(esm.linear, 2)(1),
-  'CommonJS alternate',
-);
-assertSame(
-  cjs.piecewiseLinear([{ at: 0, value: 0 }, { at: 1, value: 1 }])(0.25),
+  cjs.piecewiseLinear([
+    { at: 0, value: 0 },
+    { at: 1, value: 1 },
+  ])(0.25),
   0.25,
   'CommonJS piecewise linear',
 );
@@ -237,12 +295,20 @@ assertClose(cssEase(0.5), 0.8024033876954126, 'CSS ease midpoint');
 assert.throws(() => esm.cubicBezier(-0.1, 0, 0.5, 1), RangeError);
 assertClose(cssEase(-0.5), -0.2, 'CSS ease extrapolation before start');
 assertSame(cssEase(1.5), 1, 'CSS ease extrapolation after end');
-for (const controls of [[0, 0, 1, 1], [0, 1, 0, 1], [1, 0, 1, 0], [0.42, 0, 0.58, 1]]) {
+for (const controls of [
+  [0, 0, 1, 1],
+  [0, 1, 0, 1],
+  [1, 0, 1, 0],
+  [0.42, 0, 0.58, 1],
+]) {
   const curve = esm.cubicBezier(...controls);
   let previous = curve(0);
   for (let sample = 1; sample <= 100; sample += 1) {
     const value = curve(sample / 100);
-    assert.ok(Number.isFinite(value), `cubicBezier ${controls} should be finite at sample ${sample}`);
+    assert.ok(
+      Number.isFinite(value),
+      `cubicBezier ${controls} should be finite at sample ${sample}`,
+    );
     assert.ok(value >= previous - 1e-12, `cubicBezier ${controls} should be monotonic`);
     previous = value;
   }

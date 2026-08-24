@@ -55,10 +55,7 @@ interface ValidatedCurvePoints {
   values: number[];
 }
 
-const validateCurvePoints = (
-  points: readonly CurvePoint[],
-  name: string
-): ValidatedCurvePoints => {
+const validateCurvePoints = (points: readonly CurvePoint[], name: string): ValidatedCurvePoints => {
   if (!Array.isArray(points) || points.length < 2) {
     throw new RangeError(`${name} requires at least two points`);
   }
@@ -68,8 +65,11 @@ const validateCurvePoints = (
   for (const point of points) {
     const time = Array.isArray(point) ? point[0] : point?.at;
     const value = Array.isArray(point) ? point[1] : point?.value;
-    if ((Array.isArray(point) && point.length !== 2) ||
-      !Number.isFinite(time) || !Number.isFinite(value)) {
+    if (
+      (Array.isArray(point) && point.length !== 2) ||
+      !Number.isFinite(time) ||
+      !Number.isFinite(value)
+    ) {
       throw new RangeError(`${name} points must contain two finite numbers`);
     }
     times.push(time);
@@ -124,31 +124,30 @@ const elasticParameters = (amplitude: number, period: number): ElasticParameters
 const elasticOutValue = (
   time: number,
   amplitude: number,
-  parameters: ElasticParameters
+  parameters: ElasticParameters,
 ): number => {
   if (time === 0 || time === 1) {
     return time;
   }
-  return amplitude * 2 ** (-10 * time) *
-    Math.sin(time * parameters.frequency - parameters.phase) + 1;
+  return (
+    amplitude * 2 ** (-10 * time) * Math.sin(time * parameters.frequency - parameters.phase) + 1
+  );
 };
 
-const elasticInValue = (
-  time: number,
-  amplitude: number,
-  parameters: ElasticParameters
-): number => {
+const elasticInValue = (time: number, amplitude: number, parameters: ElasticParameters): number => {
   if (time === 0 || time === 1) {
     return time;
   }
-  return -(amplitude * 2 ** (10 * (time - 1))) *
-    Math.sin((1 - time) * parameters.frequency - parameters.phase);
+  return (
+    -(amplitude * 2 ** (10 * (time - 1))) *
+    Math.sin((1 - time) * parameters.frequency - parameters.phase)
+  );
 };
 
 const elasticInOutValue = (
   time: number,
   amplitude: number,
-  parameters: ElasticParameters
+  parameters: ElasticParameters,
 ): number => {
   if (time < 0.5) {
     return elasticInValue(time * 2, amplitude, parameters) * 0.5;
@@ -246,7 +245,11 @@ export const elasticIn = (time: number, amplitude: number = 1, period: number = 
   return elasticInValue(time, amplitude, elasticParameters(amplitude, period));
 };
 
-export const elasticInOut = (time: number, amplitude: number = 1, period: number = 0.45): number => {
+export const elasticInOut = (
+  time: number,
+  amplitude: number = 1,
+  period: number = 0.45,
+): number => {
   return elasticInOutValue(time, amplitude, elasticParameters(amplitude, period));
 };
 
@@ -282,8 +285,7 @@ export const linear = (time: number): number => {
 };
 
 /** Smooth interpolation with zero velocity at both endpoints. */
-export const smoothstep = (time: number): number =>
-  time * time * (3 - 2 * time);
+export const smoothstep = (time: number): number => time * time * (3 - 2 * time);
 
 /** Smooth interpolation with zero velocity and acceleration at both endpoints. */
 export const smootherstep = (time: number): number =>
@@ -298,9 +300,11 @@ export const hermite = (options: HermiteOptions = {}): EasingFunction => {
   return (time) => {
     const squared = time * time;
     const cubed = squared * time;
-    return (cubed - 2 * squared + time) * startSlope +
+    return (
+      (cubed - 2 * squared + time) * startSlope +
       (-2 * cubed + 3 * squared) +
-      (cubed - squared) * endSlope;
+      (cubed - squared) * endSlope
+    );
   };
 };
 
@@ -375,11 +379,7 @@ export const sineInOut = (time: number): number => {
 /**
  * Helper function to use different easing functions above and below 0.5
  */
-export const inOut = (
-  time: number,
-  start: EasingFunction,
-  end: EasingFunction
-): number => {
+export const inOut = (time: number, start: EasingFunction, end: EasingFunction): number => {
   time = time * 2;
   if (time <= 1) {
     return start(time) * 0.5;
@@ -391,12 +391,8 @@ export const inOut = (
 /**
  * Helper function to ease with a function between two values.
  */
-export const ease = (
-  fn: EasingFunction,
-  time: number,
-  from: number,
-  to: number
-): number => from + fn(time) * (to - from);
+export const ease = (fn: EasingFunction, time: number, from: number, to: number): number =>
+  from + fn(time) * (to - from);
 
 /**
  * Convenience function to linearly interpolate between two values at a given time.
@@ -430,10 +426,11 @@ const endpointTangent = (
   firstInterval: number,
   secondInterval: number,
   firstSecant: number,
-  secondSecant: number
+  secondSecant: number,
 ): number => {
-  let tangent = ((2 * firstInterval + secondInterval) * firstSecant -
-    firstInterval * secondSecant) / (firstInterval + secondInterval);
+  let tangent =
+    ((2 * firstInterval + secondInterval) * firstSecant - firstInterval * secondSecant) /
+    (firstInterval + secondInterval);
   if (tangent * firstSecant <= 0) {
     return 0;
   }
@@ -467,7 +464,7 @@ export const monotoneSpline = (points: readonly CurvePoint[]): EasingFunction =>
     secants.push(secant);
   }
 
-  const tangents: number[] = new Array(times.length);
+  const tangents = Array.from({ length: times.length }, () => 0);
   if (secants.length === 1) {
     tangents[0] = secants[0];
     tangents[1] = secants[0];
@@ -477,7 +474,7 @@ export const monotoneSpline = (points: readonly CurvePoint[]): EasingFunction =>
       intervals[intervals.length - 1],
       intervals[intervals.length - 2],
       secants[secants.length - 1],
-      secants[secants.length - 2]
+      secants[secants.length - 2],
     );
     for (let index = 1; index < tangents.length - 1; index += 1) {
       const previousSecant = secants[index - 1];
@@ -489,8 +486,8 @@ export const monotoneSpline = (points: readonly CurvePoint[]): EasingFunction =>
         const nextInterval = intervals[index];
         const firstWeight = 2 * nextInterval + previousInterval;
         const secondWeight = nextInterval + 2 * previousInterval;
-        tangents[index] = (firstWeight + secondWeight) /
-          (firstWeight / previousSecant + secondWeight / nextSecant);
+        tangents[index] =
+          (firstWeight + secondWeight) / (firstWeight / previousSecant + secondWeight / nextSecant);
       }
     }
   }
@@ -514,10 +511,12 @@ export const monotoneSpline = (points: readonly CurvePoint[]): EasingFunction =>
     const startTangentBasis = progressCubed - 2 * progressSquared + progress;
     const endBasis = -2 * progressCubed + 3 * progressSquared;
     const endTangentBasis = progressCubed - progressSquared;
-    return startBasis * values[index] +
+    return (
+      startBasis * values[index] +
       startTangentBasis * interval * tangents[index] +
       endBasis * values[index + 1] +
-      endTangentBasis * interval * tangents[index + 1];
+      endTangentBasis * interval * tangents[index + 1]
+    );
   };
 };
 
@@ -525,10 +524,7 @@ export const monotoneSpline = (points: readonly CurvePoint[]): EasingFunction =>
  * Create an inverse lookup for a continuous, strictly monotonic curve.
  * The returned function accepts a curve value and returns its normalized time.
  */
-export const invert = (
-  fn: EasingFunction,
-  options: InvertOptions = {}
-): EasingFunction => {
+export const invert = (fn: EasingFunction, options: InvertOptions = {}): EasingFunction => {
   const { tolerance = 1e-8, iterations = 50 } = options;
   if (!Number.isFinite(tolerance) || tolerance <= 0) {
     throw new RangeError('Invert tolerance must be a finite number greater than 0');
@@ -546,8 +542,10 @@ export const invert = (
   let previousValue = startValue;
   for (let sample = 1; sample <= 32; sample += 1) {
     const currentValue = fn(sample / 32);
-    if (!Number.isFinite(currentValue) ||
-      (ascending ? currentValue <= previousValue : currentValue >= previousValue)) {
+    if (
+      !Number.isFinite(currentValue) ||
+      (ascending ? currentValue <= previousValue : currentValue >= previousValue)
+    ) {
       throw new RangeError('Cannot invert a curve that is not strictly monotonic');
     }
     previousValue = currentValue;
@@ -608,20 +606,22 @@ export const createElasticInOut = (options: ElasticOptions = {}): EasingFunction
 };
 
 /** Create a curve that uses one easing function for each half. */
-export const combineInOut = (
-  start: EasingFunction,
-  end: EasingFunction
-): EasingFunction => (time) => inOut(time, start, end);
+export const combineInOut =
+  (start: EasingFunction, end: EasingFunction): EasingFunction =>
+  (time) =>
+    inOut(time, start, end);
 
 /** Reverse an easing function in time and value. */
-export const reverse = (fn: EasingFunction): EasingFunction =>
-  (time) => 1 - fn(1 - time);
+export const reverse =
+  (fn: EasingFunction): EasingFunction =>
+  (time) =>
+    1 - fn(1 - time);
 
 /** Clamp an easing function's output to a range. */
 export const clamp = (
   fn: EasingFunction,
   minimum: number = 0,
-  maximum: number = 1
+  maximum: number = 1,
 ): EasingFunction => {
   if (!Number.isFinite(minimum) || !Number.isFinite(maximum)) {
     throw new RangeError('Clamp bounds must be finite numbers');
@@ -633,16 +633,16 @@ export const clamp = (
 };
 
 /** Compose two curves, applying the inner curve before the outer curve. */
-export const compose = (
-  outer: EasingFunction,
-  inner: EasingFunction
-): EasingFunction => (time) => outer(inner(time));
+export const compose =
+  (outer: EasingFunction, inner: EasingFunction): EasingFunction =>
+  (time) =>
+    outer(inner(time));
 
 /** Blend two curves, where weight 0 selects the first and weight 1 the second. */
 export const mix = (
   first: EasingFunction,
   second: EasingFunction,
-  weight: number = 0.5
+  weight: number = 0.5,
 ): EasingFunction => {
   if (!Number.isFinite(weight)) {
     throw new RangeError('Mix weight must be a finite number');
@@ -684,12 +684,7 @@ export const alternate = (fn: EasingFunction, count: number): EasingFunction => 
 };
 
 /** Create an easing function equivalent to CSS cubic-bezier(). */
-export const cubicBezier = (
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number
-): EasingFunction => {
+export const cubicBezier = (x1: number, y1: number, x2: number, y2: number): EasingFunction => {
   if (![x1, y1, x2, y2].every(Number.isFinite)) {
     throw new RangeError('Cubic-bezier control points must be finite numbers');
   }
@@ -700,14 +695,13 @@ export const cubicBezier = (
     return linear;
   }
 
-  const coefficientA = (first: number, second: number): number =>
-    1 - 3 * second + 3 * first;
-  const coefficientB = (first: number, second: number): number =>
-    3 * second - 6 * first;
+  const coefficientA = (first: number, second: number): number => 1 - 3 * second + 3 * first;
+  const coefficientB = (first: number, second: number): number => 3 * second - 6 * first;
   const coefficientC = (first: number): number => 3 * first;
   const sample = (time: number, first: number, second: number): number =>
     ((coefficientA(first, second) * time + coefficientB(first, second)) * time +
-      coefficientC(first)) * time;
+      coefficientC(first)) *
+    time;
   const slope = (time: number, first: number, second: number): number =>
     3 * coefficientA(first, second) * time * time +
     2 * coefficientB(first, second) * time +
@@ -781,15 +775,11 @@ export const steps = (count: number, position: StepPosition = 'end'): EasingFunc
 
 /** Create a normalized damped-spring easing curve. */
 export const spring = (options: SpringOptions = {}): EasingFunction => {
-  const {
-    mass = 1,
-    stiffness = 100,
-    damping = 10,
-    velocity = 0,
-    duration = 1
-  } = options;
+  const { mass = 1, stiffness = 100, damping = 10, velocity = 0, duration = 1 } = options;
   if (![mass, stiffness, duration].every((value) => Number.isFinite(value) && value > 0)) {
-    throw new RangeError('Spring mass, stiffness, and duration must be finite numbers greater than 0');
+    throw new RangeError(
+      'Spring mass, stiffness, and duration must be finite numbers greater than 0',
+    );
   }
   if (!Number.isFinite(damping) || damping < 0 || !Number.isFinite(velocity)) {
     throw new RangeError('Spring damping and velocity must be finite, with damping at least 0');
@@ -797,7 +787,11 @@ export const spring = (options: SpringOptions = {}): EasingFunction => {
 
   const angularFrequency = Math.sqrt(stiffness / mass);
   const dampingRatio = damping / (2 * Math.sqrt(stiffness * mass));
-  if (!Number.isFinite(angularFrequency) || angularFrequency <= 0 || !Number.isFinite(dampingRatio)) {
+  if (
+    !Number.isFinite(angularFrequency) ||
+    angularFrequency <= 0 ||
+    !Number.isFinite(dampingRatio)
+  ) {
     throw new RangeError('Spring options must produce finite frequency and damping');
   }
   const criticalTolerance = 1e-8;
@@ -810,12 +804,11 @@ export const spring = (options: SpringOptions = {}): EasingFunction => {
     }
     displacement = (seconds) =>
       Math.exp(-dampingRatio * angularFrequency * seconds) *
-        (-Math.cos(dampedFrequency * seconds) +
-          sineCoefficient * Math.sin(dampedFrequency * seconds));
+      (-Math.cos(dampedFrequency * seconds) +
+        sineCoefficient * Math.sin(dampedFrequency * seconds));
   } else if (dampingRatio <= 1 + criticalTolerance) {
     displacement = (seconds) =>
-      (-1 + (velocity - angularFrequency) * seconds) *
-        Math.exp(-angularFrequency * seconds);
+      (-1 + (velocity - angularFrequency) * seconds) * Math.exp(-angularFrequency * seconds);
   } else {
     const root = Math.sqrt(dampingRatio * dampingRatio - 1);
     const rootSum = dampingRatio + root;
@@ -829,7 +822,8 @@ export const spring = (options: SpringOptions = {}): EasingFunction => {
     if (!Number.isFinite(firstCoefficient) || !Number.isFinite(secondCoefficient)) {
       throw new RangeError('Spring options must produce finite response coefficients');
     }
-    displacement = (seconds) => firstCoefficient * Math.exp(firstRoot * seconds) +
+    displacement = (seconds) =>
+      firstCoefficient * Math.exp(firstRoot * seconds) +
       secondCoefficient * Math.exp(secondRoot * seconds);
   }
   const response = (time: number): number => 1 + displacement(time * duration);

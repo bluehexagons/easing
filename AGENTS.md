@@ -9,7 +9,7 @@ trees are `dist/` and `cjs/`; `docs/curves.svg` is tracked documentation.
 
 ## Environment and validation
 
-The standard Linux host is an infra-tools-managed agent VM. Use a supported
+The standard Linux host is a Basaltwater-managed agent VM. Use a supported
 Node release (22.22.1+) and keep related repositories beside this checkout
 below `~/repos`.
 

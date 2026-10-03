@@ -13,6 +13,10 @@ The standard Linux host is a Basaltwater-managed agent VM. Use a supported
 Node release (22.22.1+) and keep related repositories beside this checkout
 below `~/repos`.
 
+Select `.nvmrc` with `nvm use` before npm commands. On Basaltwater,
+`basaltw node exec -- npm run check` selects the project runtime without
+changing the host default; `basaltw node install` installs a missing pin.
+
 - `npm ci`: install dependencies.
 - `npm run check`: build, run runtime/type tests, verify the curve gallery,
   lint, and check formatting.

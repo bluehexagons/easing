@@ -9,13 +9,19 @@ trees are `dist/` and `cjs/`; `docs/curves.svg` is tracked documentation.
 
 ## Environment and validation
 
-The standard Linux host is a Basaltwater-managed agent VM. Use a supported
-Node release (22.22.1+) and keep related repositories beside this checkout
-below `~/repos`.
+Linux development supports Basaltwater-managed CachyOS workstations and Debian
+hosts. Use a supported Node release (22.22.1+). Keep primary checkouts beside one
+another under `~/repos` or the configured `--agent-workspace` root; locate
+primary checkouts with `git worktree list` when using isolated worktrees. See
+Antistatic's [workspace guide](https://github.com/bluehexagons/antistatic/blob/main/docs/sister-repositories.md).
+Use the actual OS's Basaltwater guidance for host diagnosis; package validation
+and CI work independently of Basaltwater or sibling source checkouts.
 
 Select `.nvmrc` with `nvm use` before npm commands. On Basaltwater,
 `basaltw node exec -- npm run check` selects the project runtime without
-changing the host default; `basaltw node install` installs a missing pin.
+changing the host default; `basaltw node install` installs a missing pin and
+prepares NVM on demand on CachyOS. Ordinary NVM or compatible system Node also
+works. Install locked dependencies independently in each checkout/worktree.
 
 - `npm ci`: install dependencies.
 - `npm run check`: build, run runtime/type tests, verify the curve gallery,

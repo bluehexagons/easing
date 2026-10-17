@@ -61,7 +61,7 @@
   },
   "scripts": {
     "cjs": "tsc --project tsconfig.cjs.json && node ./build.js",
-    "check": "npm run test && npm run lint && npm run format:check",
+    "check": "npm run test && node --test scripts/release.test.mjs && npm run lint && npm run format:check",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
     "lint": "oxlint . --deny-warnings",
@@ -79,8 +79,8 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "oxfmt": "^0.70.0",
-    "oxlint": "^1.85.0",
+    "oxfmt": "^0.73.0",
+    "oxlint": "^1.88.0",
     "typescript": "^7.0.2"
   },
   "engines": {

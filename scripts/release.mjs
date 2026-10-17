@@ -24,13 +24,28 @@ const run = (command, args, options = {}) => {
   return result;
 };
 
-const requireCleanTrackedWorktree = () => {
-  if (run('git', ['diff', '--quiet'], { allowFailure: true }).status !== 0) {
-    throw new Error('Release tagging requires a clean tracked git worktree');
+const requireCleanWorktree = () => {
+  const status = run('git', ['status', '--porcelain=v1', '--untracked-files=all'], {
+    capture: true,
+  });
+  if (status.stdout.trim() !== '') {
+    throw new Error('Release tagging requires a completely clean git worktree');
   }
+};
 
-  if (run('git', ['diff', '--cached', '--quiet'], { allowFailure: true }).status !== 0) {
-    throw new Error('Release tagging requires no staged changes');
+const requirePublishedMainHead = () => {
+  const branch = run('git', ['branch', '--show-current'], { capture: true }).stdout.trim();
+  if (branch !== 'main') {
+    throw new Error(`Release tagging must run from main, got ${branch || 'detached HEAD'}`);
+  }
+  const localHead = run('git', ['rev-parse', 'HEAD'], { capture: true }).stdout.trim();
+  const remoteHead = run('git', ['ls-remote', '--heads', remote, 'refs/heads/main'], {
+    capture: true,
+  })
+    .stdout.trim()
+    .split(/\s+/u)[0];
+  if (remoteHead !== localHead) {
+    throw new Error(`Push the release commit to ${remote}/main before tagging`);
   }
 };
 
@@ -54,7 +69,8 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
   throw new Error(`Package version must be semver x.y.z for release tagging, got ${version}`);
 }
 
-requireCleanTrackedWorktree();
+requireCleanWorktree();
+requirePublishedMainHead();
 
 run('gh', ['--version'], { capture: true });
 
@@ -70,9 +86,10 @@ if (releaseExists(tagName)) {
   throw new Error(`GitHub Release ${tagName} already exists`);
 }
 
-run('npm', ['test']);
+run('npm', ['run', 'check']);
 run('npm', ['pack', '--dry-run']);
-requireCleanTrackedWorktree();
+requireCleanWorktree();
+requirePublishedMainHead();
 run('git', ['tag', '-a', tagName, '-m', `Easing ${tagName}`]);
 run('git', ['push', remote, `refs/tags/${tagName}`]);
 run('gh', [

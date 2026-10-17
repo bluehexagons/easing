@@ -32,6 +32,11 @@ Easing functions accept normalized time, usually from `0` to `1`. Values outside
 
 ## API
 
+This reference follows `main`. The tagged `v0.5.1` install above includes the core
+families, interpolation, elastic factories, Bézier, steps, and spring helpers.
+The smooth/Hermite, composition, repeat/alternate, piecewise, spline, and inverse
+helpers are available in source and await a tagged release.
+
 The built-in families are `sine`, `quad`, `cubic`, `quart`, `quint`, `expo`, `circ`, `back`, `bounce`, and `elastic`. Each provides `In`, `Out`, and `InOut` variants, such as `cubicIn`, `cubicOut`, and `cubicInOut`. `linear` is also included.
 
 | Function                                     | Purpose                                                                                                      |

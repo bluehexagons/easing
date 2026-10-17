@@ -78,8 +78,20 @@ const value = easings[name](0.5);
 ## Development
 
 ```sh
+npm ci
 npm run check
-npm run docs:curves
+```
+
+The gate builds both package formats, checks runtime and consumer types,
+verifies the committed curve gallery, and runs release-tool tests, lint and
+formatting. Run `npm run docs:curves` only to intentionally regenerate the
+gallery after a curve or gallery change.
+
+Runtime assertions report the curve and sample on failure. To investigate a
+release-tool failure without rebuilding the package, filter its Node suite:
+
+```sh
+node --test --test-reporter=spec --test-timeout=10000 --test-name-pattern='unpublished' scripts/release.test.mjs
 ```
 
 Releases are created with `npm run release` after updating the version. GitHub Actions verifies the supported Node versions.

@@ -10,7 +10,7 @@ trees are `dist/` and `cjs/`; `docs/curves.svg` is tracked documentation.
 ## Environment and validation
 
 Linux development supports Basaltwater-managed CachyOS workstations and Debian
-hosts. Use a supported Node release (22.22.1+). Keep primary checkouts beside one
+hosts. Use a supported Node release (24+). Keep primary checkouts beside one
 another under `~/repos` or the configured `--agent-workspace` root; locate
 primary checkouts with `git worktree list` when using isolated worktrees. See
 Antistatic's [workspace guide](https://github.com/bluehexagons/antistatic/blob/main/docs/sister-repositories.md).

@@ -79,8 +79,8 @@
     "prepack": "npm run build"
   },
   "devDependencies": {
-    "oxfmt": "^0.74.0",
-    "oxlint": "^1.89.0",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "typescript": "^7.0.2"
   },
   "engines": {
